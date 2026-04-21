@@ -1,0 +1,530 @@
+# API Endpoints
+
+## OTP (/api/otp)
+### Generate Mobile OTP
+**POST** `/api/otp/generateOtpMobile`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "phone": "9123456789"
+  }
+}
+```
+
+### Resend Mobile OTP
+**POST** `/api/otp/resendOtpMobile`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "phone": "9123456789"
+  }
+}
+```
+
+### Generate Mobile OTP (Forgot Password)
+**POST** `/api/otp/ForgetPasswordGenerateOtpMobile`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "phone": "9123456789"
+  }
+}
+```
+
+### Verify Mobile OTP
+**POST** `/api/otp/verifyOtpMobile`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "phone": "9123456789",
+    "otp": "123456"
+  }
+}
+```
+
+### Generate Email OTP
+**POST** `/api/otp/generateOtpEmail`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "email": "user@example.com"
+  }
+}
+```
+
+### Resend Email OTP
+**POST** `/api/otp/resendOtpEmail`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "email": "user@example.com"
+  }
+}
+```
+
+### Verify Email OTP
+**POST** `/api/otp/verifyOtpEmail`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "email": "user@example.com",
+    "otp": "123456"
+  }
+}
+```
+
+### Generate Email OTP (Forgot Password)
+**POST** `/api/otp/ForgetPasswordGenerateOtpEmail`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "email": "user@example.com"
+  }
+}
+```
+
+## Auth (/api/auth)
+### Register Mobile
+**POST** `/api/auth/register/mobile`
+**Headers:** `Authorization: Bearer <token_from_verifyOtpMobile>`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "password": "password123",
+    "dob": "YYYY-MM-DD",
+    "username": "username"
+  }
+}
+```
+
+### Register Email
+**POST** `/api/auth/register/email`
+**Headers:** `Authorization: Bearer <token_from_verifyOtpEmail>`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "password": "password123",
+    "dob": "YYYY-MM-DD",
+    "username": "username"
+  }
+}
+```
+
+### Login Mobile
+**POST** `/api/auth/login/mobile`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "userid": "9123456789",
+    "password": "password123"
+  }
+}
+```
+
+### Login Email
+**POST** `/api/auth/login/email`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "userid": "user@example.com",
+    "password": "password123"
+  }
+}
+```
+
+### Login UserID
+**POST** `/api/auth/login/userid`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "userid": "unique_userid",
+    "password": "password123"
+  }
+}
+```
+
+### Logout
+**GET** `/api/auth/login/logout`
+**Headers:** `Authorization: Bearer <token>`
+
+## Password Reset (/api/resetPassword)
+### Reset Password Mobile
+**POST** `/api/resetPassword/Mobile`
+**Headers:** `Authorization: Bearer <token_from_verifyOtpMobile>`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "password": "newpassword123"
+  }
+}
+```
+
+### Reset Password Email
+**POST** `/api/resetPassword/Email`
+**Headers:** `Authorization: Bearer <token_from_verifyOtpEmail>`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "password": "newpassword123"
+  }
+}
+```
+
+## Posts (/api/posts)
+### Add Image Post
+**POST** `/api/posts/addImagePost`
+**Headers:** `Authorization: Bearer <token>`, `Content-Type: multipart/form-data`
+**Payload:**
+- `image`: File
+- `caption`: Text (optional)
+
+### Add Video Post
+**POST** `/api/posts/addVideoPost`
+**Headers:** `Authorization: Bearer <token>`, `Content-Type: multipart/form-data`
+**Payload:**
+- `video`: File
+- `caption`: Text (optional)
+
+### Remove Post
+**DELETE** `/api/posts/removePost/:postid`
+**Headers:** `Authorization: Bearer <token>`
+
+### Get Image Feed
+**GET** `/api/posts/getImagePostsFeed`
+**Headers:** `Authorization: Bearer <token>`
+
+### Get Video Feed
+**GET** `/api/posts/getVideoPostsFeed`
+**Headers:** `Authorization: Bearer <token>`
+**Query Params:** `offset` (optional)
+
+### Get User Posts
+**GET** `/api/posts/getUserPosts/:userid`
+**Headers:** `Authorization: Bearer <token>`
+
+### Get Post Info
+**GET** `/api/posts/getPost/:postid`
+**Headers:** `Authorization: Bearer <token>`
+
+## Likes (/api/like)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+**GET** `/api/like/likePost/:postid`
+**GET** `/api/like/unlikePost/:postid`
+**GET** `/api/like/likeStory/:storyid`
+**GET** `/api/like/unlikeStory/:storyid`
+**GET** `/api/like/likeAComment/:commentid`
+**GET** `/api/like/unlikeAComment/:commentid`
+
+## Follow (/api/follow)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Follow User
+**POST** `/api/follow/follow`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "followingid": "target_userid"
+  }
+}
+```
+
+### Follow User V2 (Handles Private Accounts)
+**POST** `/api/follow/follow/V2`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "followingid": "target_userid"
+  }
+}
+```
+
+### Cancel Follow Request
+**POST** `/api/follow/cancelFollowRequest`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "followingid": "target_userid"
+  }
+}
+```
+
+### Accept Follow Request
+**POST** `/api/follow/acceptFollowRequest`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "followerId": "requester_userid"
+  }
+}
+```
+
+### Unfollow User
+**POST** `/api/follow/unfollow`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "followingid": "target_userid"
+  }
+}
+```
+
+### Get Followers
+**GET** `/api/follow/getFollowers/:userid`
+
+### Get Followings
+**GET** `/api/follow/getFollowings/:userid`
+
+### Get All Follow Requests
+**GET** `/api/follow/getAllFollowRequests`
+
+### Reject Follow Request
+**DELETE** `/api/follow/rejectFollowRequest/:followerId`
+
+## Comments (/api/comment)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Add Comment
+**POST** `/api/comment/addComment`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "postid": "123",
+    "comment": "Nice post!"
+  }
+}
+```
+
+### Remove Comment
+**POST** `/api/comment/removeComment`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "postid": "123",
+    "commentid": "456"
+  }
+}
+```
+
+### Get Comments
+**GET** `/api/comment/getComments/:postid`
+
+### Reply to Comment
+**POST** `/api/comment/replyTo/:commentId`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "postId": "123",
+    "comment": "Reply text"
+  }
+}
+```
+
+### Get Comment Replies
+**GET** `/api/comment/getCommentReplies/:commentId`
+
+## Users (/api/users)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Get Suggested Users
+**GET** `/api/users/getUsers`
+
+### Get User Details
+**GET** `/api/users/getUser/:userid`
+
+### Get User by UUID
+**GET** `/api/users/getUserByUUid/:uuid`
+
+### Get My Data
+**GET** `/api/users/getMyData`
+
+## Profile (/api/profile)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Edit Username
+**PATCH** `/api/profile/edit/username`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "name": "new_username"
+  }
+}
+```
+
+### Edit UserID
+**PATCH** `/api/profile/edit/userid`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "newUserId": "new_userid"
+  }
+}
+```
+
+### Edit Bio
+**PATCH** `/api/profile/edit/bio`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "bioText": "New bio text"
+  }
+}
+```
+
+### Edit Profile Picture
+**POST** `/api/profile/edit/Profile`
+**Headers:** `Content-Type: multipart/form-data`
+**Payload:**
+- `image`: File
+
+## Story (/api/story)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Add Story
+**POST** `/api/story/addStory`
+**Headers:** `Content-Type: multipart/form-data`
+**Payload:**
+- `media`: File
+- `type`: "image" or "video"
+
+### Remove Story
+**DELETE** `/api/story/removeStory/:storyid`
+
+### Get All Stories (Feed)
+**GET** `/api/story/getStories`
+
+### Get My Stories
+**GET** `/api/story/getMyStories`
+
+### Get User Stories
+**GET** `/api/story/getStories/:userid`
+
+## FCM (/api/fcm)
+### Update FCM Token
+**PATCH** `/api/fcm/updateToken`
+**Headers:** `Authorization: Bearer <token>`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "token": "fcm_token_string"
+  }
+}
+```
+
+## Messages (/api/messages)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Check Pending Messages Count
+**GET** `/api/messages/checkPendingMessages`
+
+### Get Pending Messages
+**POST** `/api/messages/getPendingMessages`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "senderUuid": "uuid_string"
+  }
+}
+```
+
+### Send Message
+**POST** `/api/messages/sendMessage`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "MsgUid": "unique_msg_id",
+    "replyToMessageId": "optional_reply_id",
+    "senderProfilePic": "url",
+    "senderName": "name",
+    "senderUserId": "userid",
+    "senderUuid": "uuid",
+    "receiverUuid": "uuid",
+    "type": "text",
+    "msg": "Hello",
+    "timestamp": "timestamp"
+  }
+}
+```
+
+### Update Message Delivery Status
+**POST** `/api/messages/updateMessageDeliveryStatus`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "senderUUid": "uuid",
+    "receiverUUid": "uuid"
+  }
+}
+```
+
+### Upload Message Media
+**POST** `/api/messages/uploadMedia`
+**Headers:** `Content-Type: multipart/form-data`
+**Payload:**
+- `media`: File
+
+### Get All Chats
+**GET** `/api/messages/getAllChats`
+
+### Delete Message (For Me)
+**PATCH** `/api/messages/deleteMessageForMe`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "MsgUid": "msg_id",
+    "Role": "sender" // or "receiver"
+  }
+}
+```
+
+### Unsend Message (For Everyone)
+**PATCH** `/api/messages/unSendMessage`
+**Payload:**
+```json
+{
+  "nameValuePairs": {
+    "MsgUid": "msg_id",
+    "receiverUUid": "uuid"
+  }
+}
+```
+
+## Privacy (/api/privacy)
+**Headers:** `Authorization: Bearer <token>` for all endpoints below.
+
+### Set Account Private
+**GET** `/api/privacy/setPrivate`
+
+### Set Account Public
+**GET** `/api/privacy/setPublic`

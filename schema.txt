@@ -1,0 +1,167 @@
+CREATE TABLE users (
+  userid VARCHAR(250) NOT NULL PRIMARY KEY,
+  username varchar(250) NOT NULL,
+  email varchar(250) DEFAULT NULL,
+  phone varchar(250) DEFAULT NULL,
+  pass TEXT NOT NULL,
+  bio VARCHAR(255) NOT NULL DEFAULT 'I use threadly daily',
+  profilepic TEXT DEFAULT NULL,
+  dob DATE NOT NULL,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  uuid varchar(36) not null ,
+  fcmToken text null,
+  isPrivate boolean default false,
+  blocked boolean default false,
+  banDuration enum('24hr','permanent','none') deafult 'none',
+  banReason text null,
+  profileVersion int not null deafult =1,
+  modifiedAt datetime not null default current_timestamp,
+  sessionId text null ,
+  UNIQUE KEY email (email),
+  UNIQUE KEY phone (phone),
+  unique key uuid (uuid)
+);
+
+
+CREATE TABLE imagepost (
+  postid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  userid VARCHAR(250) NOT NULL,
+  imageurl TEXT NOT NULL,
+  caption varchar(255),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  type TEXT NOT NULL,
+  FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE post_comments (
+  commentid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  userid VARCHAR(250) NOT NULL,
+  postid INT NOT NULL,
+  comment_text TEXT NOT NULL,
+  replyToCommentId int null,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (postid) REFERENCES imagepost(postid) ON DELETE CASCADE ON UPDATE CASCADE
+  foreign key (replyToCommentId) references post_comments(commentid) on delte cascade on update cascade
+);
+
+CREATE TABLE post_likes (
+  likeid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  userid VARCHAR(250) NOT NULL,
+  postid INT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (postid) REFERENCES imagepost(postid) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE comment_likes (
+  comment_like_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  userid VARCHAR(250) NOT NULL,
+  commentid INT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (commentid) REFERENCES post_comments(commentid) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE followers (
+  followid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  followerid VARCHAR(250) NOT NULL,
+  followingid VARCHAR(250) NOT NULL,
+  isApproved boolean default false,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (followerid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (followingid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE post_shares (
+  shareid INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  sharerid VARCHAR(250) NOT NULL,
+  sharedto VARCHAR(250) NOT NULL,
+  postid INT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (sharerid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (sharedto) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (postid) REFERENCES imagepost(postid) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE otpmodel (
+  phone_email VARCHAR(255) NOT NULL,
+  otp INT NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  flag TINYINT(1) DEFAULT 0
+);
+
+CREATE TABLE story (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  userid VARCHAR(250) NOT NULL,
+  storyUrl TEXT NOT NULL,
+  type VARCHAR(50) NOT NULL DEFAULT 'image',
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+create table story_likes (
+likeid int not null primary key auto_increment,
+ userid varchar(250) not null,
+ storyid int not null,
+ createdAt datetime default current_timestamp,
+  foreign key (userid) references users(userid) on delete cascade on update cascade,
+  foreign key (storyid) references story(id) on delete cascade on update cascade
+);
+
+
+CREATE TABLE messages (
+  messageId BIGINT NOT NULL AUTO_INCREMENT,
+  messageUid CHAR(36) NOT NULL,  -- unique UUID for message
+  replyToMessageId CHAR(36) NULL,  -- references another messageId
+  senderUUId CHAR(36) NOT NULL,
+  recieverUUId CHAR(36) NOT NULL,
+  type ENUM('text','image','video','audio','file','post','story') DEFAULT 'text',
+  message TEXT,
+  postId int default null,
+  postLink text,
+  creationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deliveryStatus TINYINT DEFAULT 0,
+  isDeletedByReceiver BOOLEAN DEFAULT FALSE,
+  isDeletedBySender BOOLEAN DEFAULT FALSE,
+  isDeletedBoth BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (messageId),
+  foreign key (senderUUId) references users(uuid) on delete cascade on update cascade,
+  foreign key (recieverUUId) references users(uuid) on delete cascade on update cascade
+)
+
+
+
+
+create table storyview (
+		viewId int not null primary key auto_increment,
+  userid varchar(250) not null,
+  uuid varchar(36) not null,
+  storyid int not null,
+  created_at timestamp not null default current_timestamp,
+  foreign key (userid) references users(userid) on delete cascade on update cascade,
+  foreign key (storyid) references story(id) on delete cascade on update cascade,
+  foreign key (uuid) references users(uuid) on delete cascade on update cascade
+
+)
+
+
+create table postview (
+		viewId int not null primary key auto_increment,
+  userid varchar(250) not null,
+  uuid varchar(36) not null,
+  postid int not null,
+  created_at timestamp not null default current_timestamp
+  foreign key (userid) references users(userid) on delete cascade on update cascade,
+  foreign key (postid) references imagepost(postid) on delete cascade on update cascade,
+  foreign key (uuid) references users(uuid)
+
+)
+
+
+
+// indexing
+create  index idx_captions_userid on imagepost(caption);
+create unique index idx_users_userid on users(userid);
+
