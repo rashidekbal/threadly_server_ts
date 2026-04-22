@@ -107,6 +107,16 @@ const unRestrictUser = (uuid:string) => {
    const db_query = `update users set blocked=0 , banDuration='none',banned_at=null ,banReason=null where uuid=?`;
   return fetchDb(db_query, [uuid]);
 };
+const getUserStory=async(userid:string)=>{
+  const db_query = `
+select st.*,
+ count(distinct sl.userid) as likesCount 
+ from story as st left join story_likes as sl on st.id=sl.storyid 
+ where st.userid=? 
+ group by st.id order by st.id desc
+`;
+return fetchDb(db_query,[userid]);
+}
 export {
   getCommentsOfPost,
   getUserPost,
@@ -116,5 +126,6 @@ export {
   userinfoEdit,
   editUserProfile,
   restrictUser,
-  unRestrictUser
+  unRestrictUser,
+  getUserStory
 };

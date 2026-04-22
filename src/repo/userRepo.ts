@@ -25,7 +25,6 @@ const getUUidFromUserId = (userid:string) => {
 
 
 const getFcmTokenWithUUid = (uuid:string) => {
-  // console.log("here to find fcm for "+uuid);
   return new Promise(async (resolve, reject) => {
     try {
       let response = await fetchDb(`select fcmToken from users where uuid =?`, [
@@ -65,4 +64,4 @@ async function getBasicUserDetailsFromUUid(uuid:string){
   })
 }
 
-export {getUUidFromUserId}
+export {getUUidFromUserId,getFcmTokenWithUUid,getBasicUserDetailsFromUUid}

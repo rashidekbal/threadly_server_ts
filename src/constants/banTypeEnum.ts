@@ -1,5 +1,5 @@
  enum BanType{
-    PERMANENT,
-    TEMPORARY
+    PERMANENT="PERMANENT",
+    TEMPORARY="TEMPORARY"
 }
 export default BanType
