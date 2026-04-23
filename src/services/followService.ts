@@ -1,12 +1,44 @@
+import ServiceError from "../constants/serviceError.js";
 import FollowRepo from "../repo/followRepo.js";
 import logger, { formErrorBody } from "../utils/pino.js";
-import { fcmService } from "./index.service.js";
+import { fcmService, privacyService } from "./index.service.js";
 
 export default class FollowService {
   followRepo: FollowRepo;
   constructor(followRepo: FollowRepo) {
     this.followRepo = followRepo;
   }
+
+  registerNewFollow=async(followerId:string,followingId:string)=>{
+    try {
+        const isPrivateAccount = await privacyService.isUserPrivate(followingId);
+        if (isPrivateAccount) {
+          await this.followRepo.addnewFollow(followerId,followingId,false);
+        //   notifyFollowRequest(followerid, followingid);
+          return {status:"pending"}
+        }
+        await this.followRepo.addnewFollow(followerId,followingId,true);
+        this.notifyNewFollower(followerId, followingId);
+        return {status:"approved"}
+        
+    } catch (error) {
+        throw error
+        
+    }
+    
+
+  }
+
+
+
+
+
+
+
+
+
+
+
   approveAllPendingFollowRequest = async (userid: string) => {
     try {
       const pendingApprovals = await this.followRepo.getFollowRequests(userid);
@@ -17,45 +49,48 @@ export default class FollowService {
       pendingApprovals.forEach((item) => {
         this.notifyFollowRequestApproved(item.followerid,userid);
       });
-      // console.log("notified all followers ");
+
     } catch (error) {
       logger.error(formErrorBody(error as string, null, null));
     }
   };
 
-//    notifyNewFollower = async (followerId, followingId) => {
-//   const getFollowerDetailsQuery =
-//     "select us.userid,us.username,us.profilepic , count(distinct fl.followerid) as isFollowed from users as us left join followers as fl on us.userid = fl.followingid and fl.followerid=? and fl.isApproved=true where userid=? limit 1";
-//   const getFollowingDetailsQuery =
-//     "select fcmToken ,userid from users where userid=? limit 1";
-//   try {
-//     let follower = await fetchDb(getFollowerDetailsQuery, [
-//       followingId,
-//       followerId,
-//     ]);
-//     let following = await fetchDb(getFollowingDetailsQuery, [followingId]);
-//     if (
-//       follower.length > 0 &&
-//       following.length > 0 &&
-//       following[0].fcmToken != null
-//     ) {
-//       const token = following[0].fcmToken;
-//       const ReceiverUserId = following[0].userid;
-//       await notify_new_Follower_via_fcm(
-//         token,
-//         followerId,
-//         follower[0].username,
-//         String(follower[0].profilepic ? follower[0].profilepic : "null"),
-//         Number(follower[0].isFollowed) > 0,
-//         ReceiverUserId
-//       );
-//     } else {
-//       // console.log("no fcm token");
-//     }
-//   } catch (error) {
-//     logger.error(formErrorBody(error,null));
-//   }
-// };
+   notifyNewFollower = async (followerId:string, followingId:string) => {
+  try {
+    //don't get confused with name there is a legecy naming problem
+    let follower:any = await this.followRepo.getFollowingDetails(
+      followingId,
+      followerId,
+    );
+    //don't get confused with name there is a legecy naming problem
+    let following:any = await this.followRepo.getFollowerDetails(followingId);
+    if (
+      follower.length > 0 &&
+      following.length > 0 &&
+      following[0].fcmToken != null
+    ) {
+      const token = following[0].fcmToken;
+      const ReceiverUserId = following[0].userid;
+      const profilePic=String(follower[0].profilepic ? follower[0].profilepic : "null");
+      const isfollowed:boolean= Number(follower[0].isFollowed) > 0;
+      await fcmService.notify_new_Follower_via_fcm(
+       { token,
+        userid:followerId,
+        username:follower[0].username,
+        profile:profilePic,
+       isFollowed:String(isfollowed),
+        ReceiverUserId
+    }
+      );
+    }
+  } catch (error) {
+    logger.error(formErrorBody(error as string,null,null));
+  }
+};
+
+isRequestApproved=(followerid:string,followingid:string)=>{
+    return this.followRepo.checkFollowRequestStatus(followerid,followingid);
+}
 
 
 //  notifyFollowRequest = async (followerId, followingId) => {
@@ -164,4 +199,7 @@ export default class FollowService {
 //    logger.error(formErrorBody(error,null));
 //   }
 // };
+
+
+
 }

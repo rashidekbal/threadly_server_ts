@@ -9,7 +9,8 @@ import ErrorDetails from "../constants/errorDetails.js";
 const setPrivateController=async (req:express.Request,res:express.Response)=>{
 
     try {
-            const userid=req.body.userid;
+            const userid=req.auth?.userid;
+            if(!userid)return res.status(403).json(new ApiError(403,apiErrorType.AUTH_ERROR,new ErrorDetails("please provide a valid jwt token")))
            
         await privacyService.setUserPrivacy(userid,true);
        return  res.json(new Response(200,"ok"));
@@ -23,7 +24,9 @@ const setPrivateController=async (req:express.Request,res:express.Response)=>{
 const setPublicController=async(req:express.Request,res:express.Response)=>{
      
     try {
-        const userid=req.body.userid;
+       const userid=req.auth?.userid;
+            if(!userid)return res.status(403).json(new ApiError(403,apiErrorType.AUTH_ERROR,new ErrorDetails("please provide a valid jwt token")))
+           
         await privacyService.setUserPrivacy(userid,false);
         followService.approveAllPendingFollowRequest(userid);
         res.json(new Response(200,"ok"));

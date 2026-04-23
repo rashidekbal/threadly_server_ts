@@ -9,7 +9,7 @@ import apiErrorType from "../constants/apiErrorTypesEnum.js";
 import express, { NextFunction } from "express"
 import ErrorDetails from "../constants/errorDetails.js";
 import { getJWT_secretToken } from "../utils/envValuesAccessInterface.js";
-async function verifyToken(req:express.Request, res:express.Response, next:NextFunction) {
+async function verifyToken(req:express.Request|any, res:express.Response, next:NextFunction) {
   let header = req.headers["authorization"];
   if (!header) return res.status(401).json(new ApiError(401, apiErrorType.AUTH_ERROR,new ErrorDetails("please attach a proper auth header")));
   let token = header.split(" ")[1];
@@ -20,7 +20,7 @@ async function verifyToken(req:express.Request, res:express.Response, next:NextF
      if(!sessionId||!result.userid)return res.status(401).json(new ApiError(401,apiErrorType.AUTH_ERROR ,new ErrorDetails("auth token invalid")));
     let isValidSession =await validateSession(sessionId,result.userid);
     if(!isValidSession)return res.status(401).json(new ApiError(401, apiErrorType.AUTH_ERROR,new ErrorDetails("auth token invalid")));
-    req.body = {userid:result.userid};
+    req.auth = {userid:result.userid}
    return next();
   } catch (error) {
     logger.error(formErrorBody(error as string,null,req));

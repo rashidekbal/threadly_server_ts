@@ -1,10 +1,18 @@
+// import {StartServiceFcm } from "./src/Fcm/FcmService.js";
+import server from "./app.js";
 import "dotenv/config";
-import app from "./app.js";
+import connection from "./db/connection.js";
+import { fcmService } from "./services/index.service.js";
 const port = process.env.PORT;
-app.listen(port, (err) => {
+connection.connect((err) => {
     if (err) {
-        console.log("error starting server : " + err);
-        return;
+        console.log(err);
     }
-    console.log(`server running at port ${port}`);
+    else {
+        server.listen(port, () => {
+            console.log("connected to database ");
+            console.log(`running on server port ${port} `);
+            fcmService.StartServiceFcm();
+        });
+    }
 });
