@@ -1,5 +1,4 @@
 import logger, { formErrorBody } from "../utils/pino.js";
-import fetchDb from "../utils/dbQueryHelper.js";
 import ApiError from "../constants/apiError.js";
 import Response from "../constants/Response.js";
 import apiErrorType from "../constants/apiErrorTypesEnum.js";

@@ -1,5 +1,5 @@
-import { json, Router } from "express";
-import pino, { destination } from "pino"
+
+import pino from "pino"
 import express from "express"
 
 const logger=pino({

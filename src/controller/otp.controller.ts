@@ -1,6 +1,5 @@
-import request from "request"; // Module for making HTTP requests
-import connection from "../db/connection.js"; // Database connection instance
-import jwt, { JwtPayload } from "jsonwebtoken"; // Library for generating and verifying JSON Web Tokens
+// Database connection instance
+import jwt from "jsonwebtoken"; // Library for generating and verifying JSON Web Tokens
 import "dotenv/config"; // Enables usage of environment variables
 // Helper function for executing database queries
 import { isvalidEmail } from "../utils/regex.js"; // Regex pattern for validating email addresses
@@ -14,7 +13,6 @@ import {
   getEazyOtpApiKey,
   getJWT_secretToken,
 } from "../utils/envValuesAccessInterface.js";
-import errorDetails from "../constants/errorDetails.js";
 import express from "express";
 import ErrorDetails from "../constants/errorDetails.js";
 

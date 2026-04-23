@@ -4,7 +4,6 @@ import ApiError from "../constants/apiError.js";
 import apiErrorType from "../constants/apiErrorTypesEnum.js";
 import express, { NextFunction } from "express"
 import ErrorDetails from "../constants/errorDetails.js";
-import UserRepo from "../repo/userRepo.js";
 import { followService } from "../services/index.service.js";
 
 export default async function CheckIfFollowExists(req:express.Request,res:express.Response,next:NextFunction){

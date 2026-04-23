@@ -1,5 +1,4 @@
-import logger, { formErrorBody } from "../utils/pino.js";
-import fetchDb from "../utils/dbQueryHelper.js"; // Helper function for database queries
+import logger, { formErrorBody } from "../utils/pino.js";// Helper function for database queries
 import ApiError from "../constants/apiError.js";
 import apiErrorType from "../constants/apiErrorTypesEnum.js";
 import express from "express";

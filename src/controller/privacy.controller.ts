@@ -1,7 +1,6 @@
 import logger, { formErrorBody } from "../utils/pino.js";
 import Response from "../constants/Response.js"
 import ApiError from "../constants/apiError.js";
-import fetchDb from "../utils/dbQueryHelper.js";
 import apiErrorType from "../constants/apiErrorTypesEnum.js";
 import express from "express";
 import { followService, privacyService } from "../services/index.service.js";

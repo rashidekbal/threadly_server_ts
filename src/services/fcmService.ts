@@ -247,35 +247,35 @@ export default class FcmService{
 }
 
 
-//  notify_new_Follower_request_fcm=async (token, userid, username, profile, isFollowed, ReceiverUserId) => {
-//   return new Promise(async (resolve, reject) => {
-//     //  console.log(ReceiverUserId);
-//     const message = {
-//       token,
-//       android: {
-//         priority: "high",
-//       },
+ notify_new_Follower_request_fcm=async (packet:{token:string, userid:string, username:string, profile:string, isFollowed:string, ReceiverUserId:string}) => {
+  return new Promise(async (resolve, reject) => {
+    //  console.log(ReceiverUserId);
+    const message:TokenMessage = {
+      token:packet.token,
+      android: {
+        priority: "high",
+      },
      
 
-//       data: {
-//         responseType: "newFollowRequest",
-//         username: username,
-//         userid: userid,
-//         ReceiverUserId: ReceiverUserId,
-//         isFollowed: String(isFollowed),
-//         profile: profile
-//       }
-//     }
-//     try {
-//       await admin.messaging().send(message);
-//       resolve(new Response(200, { msg: "success" }))
+      data: {
+        responseType: "newFollowRequest",
+        username: packet.username,
+        userid: packet.userid,
+        ReceiverUserId: packet.ReceiverUserId,
+        isFollowed: packet.isFollowed,
+        profile: packet.profile
+      }
+    }
+    try {
+      await admin.messaging().send(message);
+      resolve(new Response(200, { msg: "success" }))
 
-//     } catch (error) {
-//       reject(new Response(500, { msg: error }))
+    } catch (error) {
+      reject(new Response(500, { msg: error }))
 
-//     }
-//   })
-// }
+    }
+  })
+}
 
 
 

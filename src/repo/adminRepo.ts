@@ -1,4 +1,3 @@
-import { getUsersController } from "../controller/admin/user.controller.js";
 import bcryptUtil from "../utils/bcryptUtil.js";
 import fetchDb from "../utils/dbQueryHelper.js";
 

@@ -1,5 +1,3 @@
-
-// import {StartServiceFcm } from "./src/Fcm/FcmService.js";
 import server from "./app.js";
 import "dotenv/config"
 import connection from "./db/connection.js";

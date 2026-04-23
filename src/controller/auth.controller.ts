@@ -1,15 +1,9 @@
 import ApiError from "../constants/apiError.js";
-import bcryptUtil from "../utils/bcryptUtil.js";
-import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { v4 } from "uuid";
-import redisClient from "../redis/redis.js";
-import fetchDb from "../utils/dbQueryHelper.js";
-import connection from "../db/connection.js";
+
 import Response from "../constants/Response.js";
 import apiErrorType from "../constants/apiErrorTypesEnum.js";
 import AccountRestriction_body from "../constants/accountRestrictionBody.js";
-import { get_CurrentTimeStamp_Sql_Format } from "../utils/helperFunctions.js";
 import AuthError_body from "../constants/authErrorBody.js";
 import logger, { formErrorBody } from "../utils/pino.js";
 import express from "express";
@@ -21,8 +15,6 @@ import ServiceError from "../constants/serviceError.js";
 import ErrorEnum from "../constants/errorsEnum.js";
 import BanType from "../constants/banTypeEnum.js";
 import LoginType from "../constants/loginTypeEnum.js";
-import { auth } from "firebase-admin";
-import user from "../types/user.js";
 import registerUserType from "../types/registerUserType.js";
 
 const Login_userid_controller = async (
