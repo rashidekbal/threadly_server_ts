@@ -2,7 +2,7 @@ import http from "http";
 import cors from "cors"
 import { Server } from "socket.io";
 import express from "express";
-// import OptRoute from "./routes/otpRoute.js";
+import OptRoute from "./routes/otp.route.js";
 // import registerRoute from "./routes/registerRoute.js";
 // import loginRoute from "./routes/loginRoute.js";
 // import postRoute from "./routes/postsRoute.js";
@@ -16,7 +16,7 @@ import usersRouter from "./routes/user.route.js";
 // import storyRouter from "./routes/StoryRoute.js";
 // import SearchRouter from "./routes/SearchRoute.js";
 // import Fcmrouter from "./routes/FcmRoute.js";
-// import PrivacyRouter from "./routes/PrivacyRoute.js";
+import PrivacyRouter from "./routes/privacy.route.js";
 import authRoute from "./routes/auth.route.js";
 import AdminAuthRouter from "./routes/admin/adminAuth.route.js";
 
@@ -48,7 +48,7 @@ app.use(express.static("public"));
 //   res.send("welcome");
 // });
 // //routes
-// app.use("/api/otp", OptRoute);
+app.use("/api/otp", OptRoute);
 app.use("/api/auth", authRoute);
 // app.use("/api/ForgetPassword", ForgetPasswordRoute);
 // app.use("/api/auth", AuthRouter);
@@ -61,7 +61,7 @@ app.use("/api/users", usersRouter);
 // app.use("/api/story", storyRouter);
 // app.use("/api/fcm", Fcmrouter);
 // app.use("/api/messages", MessagesRouter);
-// app.use("/api/privacy", PrivacyRouter);
+app.use("/api/privacy", PrivacyRouter);
 // app.use("/api/search", SearchRouter);
 // // all rotes below are for admin panel use 
 app.use("/api/admin/v1/auth", AdminAuthRouter);

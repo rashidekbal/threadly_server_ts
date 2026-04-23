@@ -3,7 +3,8 @@ enum ErrorEnum{
     invalid_user="INVALID_USER",
     invalid_password="INVALID_PASSWORD",
     banned="BANNED",
-    internal_error="INTERNAL_SERVER_ERROR"
+    internal_error="INTERNAL_SERVER_ERROR",
+    notAdult="NOT_ADULT"
 
 }
 export default ErrorEnum

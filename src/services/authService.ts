@@ -2,14 +2,15 @@ import { v4 } from "uuid";
 import errorEnum from "../constants/errorsEnum.js";
 import UserRepo from "../repo/userRepo.js";
 import bcryptUtil from "../utils/bcryptUtil.js";
-import { get_CurrentTimeStamp_Sql_Format } from "../utils/helperFunctions.js";
+import { get_CurrentTimeStamp_Sql_Format, verifyAgeAbove18 } from "../utils/helperFunctions.js";
 import jwt from "jsonwebtoken";
 import RedisHelper from "../redis/operation.js";
 import { getJWT_secretToken } from "../utils/envValuesAccessInterface.js";
-import logger, { formErrorBody } from "../utils/pino.js";
 import ServiceError from "../constants/serviceError.js";
 import LoginType from "../constants/loginTypeEnum.js";
-import redisClient from "../redis/redis.js";
+import {v4 as UUIDv4} from "uuid"
+import user from "../types/user.js";
+import registerUserType from "../types/registerUserType.js";
 
 export default class AuthService {
   userRepo: UserRepo;
@@ -38,7 +39,7 @@ export default class AuthService {
         if(error instanceof ServiceError){
             throw  error;
         }
-        throw new ServiceError(errorEnum.internal_error,"something went wrong please check the logs")
+        throw new ServiceError(errorEnum.internal_error,error as string)
 
     }
   };
@@ -53,6 +54,47 @@ export default class AuthService {
     }
 
   }
+
+ 
+  registerUser=async(userdata:registerUserType)=>{
+       try {
+         const password = await bcryptUtil.hashPassword(userdata.password);
+
+    // Generate a unique user ID using the username and current timestamp
+    let userid = userdata.username.split(" ")[0] + Date.now();
+    let uuid = UUIDv4();
+    const sessionId = UUIDv4();
+
+    // Verify if the user is an adult based on their date of birth
+    let isAdult = verifyAgeAbove18(userdata.dob);
+    if (!isAdult) {
+     throw new ServiceError(errorEnum.notAdult,"age must be above 18 or 18")
+    }
+    const data:user={uuid,
+        userid,
+        username:userdata.username,
+        email:userdata.email,
+        phone:userdata.phone,
+        password,
+        bio:userdata.bio,
+        dob:userdata.dob,
+        sessionId
+
+    }
+
+      await this.userRepo.registerNewUser(data)
+      let token = jwt.sign({ userid, sessionId }, getJWT_secretToken());
+            return {userdata:data,token}
+       } catch (error) {
+        if(error instanceof ServiceError){
+            throw error;
+        }
+        throw new ServiceError(errorEnum.internal_error,error as string)
+        
+       }
+
+
+}
 
   //TODO: write test for this function
   isbanned = (userdata: any) => {

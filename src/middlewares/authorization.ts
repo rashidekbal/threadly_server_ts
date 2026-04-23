@@ -20,7 +20,7 @@ async function verifyToken(req:express.Request, res:express.Response, next:NextF
      if(!sessionId||!result.userid)return res.status(401).json(new ApiError(401,apiErrorType.AUTH_ERROR ,new ErrorDetails("auth token invalid")));
     let isValidSession =await validateSession(sessionId,result.userid);
     if(!isValidSession)return res.status(401).json(new ApiError(401, apiErrorType.AUTH_ERROR,new ErrorDetails("auth token invalid")));
-    req.body.userid = result.userid;
+    req.body = {userid:result.userid};
    return next();
   } catch (error) {
     logger.error(formErrorBody(error as string,null,req));
