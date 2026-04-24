@@ -115,8 +115,8 @@ import ErrorDetails from "../constants/errorDetails.js";
  */
 async function generateOtpEmail(req: express.Request, res: express.Response) {
   try {
-    let email = req.body.nameValuePairs.email;
-    if (!email || !isvalidEmail(email))
+    let email = req.body?.nameValuePairs?.email;
+    if (!email || !isvalidEmail(String(email)))
       return res
         .status(400)
         .json(
@@ -144,8 +144,8 @@ async function generateOtpEmail(req: express.Request, res: express.Response) {
  */
 async function verifyOtpEmail(req: express.Request, res: express.Response) {
   try {
-    let otp = req.body.nameValuePairs.otp; // Extract OTP from the request body
-    let email = req.body.nameValuePairs.email; // Extract email address from the request body
+    let otp = req.body?.nameValuePairs?.otp; // Extract OTP from the request body
+    let email = req.body?.nameValuePairs?.email; // Extract email address from the request body
     // Return 400 Bad Request if OTP or email is invalid
     if (!otp || !isvalidEmail(email))
       return res

@@ -1,8 +1,8 @@
-import "dotenv/config";
 import mysql from "mysql2";
-const db_url:string|undefined=process.env.DB_URL
+import { getDbUrl } from "../utils/envValuesAccessInterface.js";
+const db_url:string=getDbUrl();
 
-let connection = mysql.createConnection(db_url as string);
+let connection = mysql.createConnection(db_url);
 
 
 export default connection;

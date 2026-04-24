@@ -63,4 +63,20 @@ export default class FollowRepo {
     const query="select us.userid,us.username,us.profilepic from followers as flws left join users as us on flws.followerid=us.userid where flws.followingid=? and isApproved=false"
     return fetchDb(query,[userid]);
   }
+  rejectFollowRequest=(followerId:string,followingId:string)=>{
+    const query = `delete from followers where followerid=? and followingid=? and isApproved=false`;
+    return fetchDb(query,[followerId,followingId]);
+  }
+  cancelFollowRequest=(followerId:string,followingId:string)=>{
+    const query = `delete from followers where followerid=? and  followingid=? and isApproved=false`;
+    return fetchDb(query,[followerId,followingId]);
+  }
+  unfollow=(followerId:string,followingId:string)=>{
+    const query = "delete from followers where  followerid = ? and followingid=? and isApproved=true ";
+    return fetchDb(query,[followerId,followingId]);
+  }
+  addFollow=(followerId:string,followingId:string,isApproved:boolean)=>{
+    let query = "insert into followers (followerid,followingid,isApproved) values (?,?,?)";
+    return fetchDb(query,[followerId,followingId,isApproved]);
+  }
 }

@@ -1,7 +1,8 @@
  import admin from "firebase-admin";
  import Response from "../constants/Response.js"
 import { TokenMessage } from "firebase-admin/messaging";
-const firebaseBase64=process.env.FIREBASE_ADMIN as any;
+import { getFirebaseAdmin } from "../utils/envValuesAccessInterface.js";
+const firebaseBase64=getFirebaseAdmin();
 const serviceAccount=JSON.parse(Buffer.from(firebaseBase64,"base64").toString("utf-8"));
 export default class FcmService{
  StartServiceFcm = () => {

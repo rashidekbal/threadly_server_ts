@@ -26,8 +26,9 @@ const Login_userid_controller = async (
     banReason = "",
     banned_at = "";
   try {
-    let userid = req.body.nameValuePairs.userid;
-    let password = req.body.nameValuePairs.password;
+    const nvp = req.body?.nameValuePairs;
+    let userid = nvp?.userid;
+    let password = nvp?.password;
     if (!password || !userid)
       return res
         .status(400)
@@ -121,9 +122,10 @@ const Login_email_controller = async (
     banReason = "",
     banned_at = "";
   try {
-    let userid = req.body.nameValuePairs.userid;
-    let password = req.body.nameValuePairs.password;
-    if (!password || !userid)
+    const nvp = req.body?.nameValuePairs;
+    let email = nvp?.email;
+    let password = nvp?.password;
+    if (!password || !email)
       return res
         .status(400)
         .json(
@@ -136,7 +138,7 @@ const Login_email_controller = async (
     //create a valid usermodel
     const data: any = await authService.loginUserId(
       LoginType.email,
-      userid,
+      email,
       password,
     );
     banDuration = data.userdata.banDuration;
@@ -216,9 +218,10 @@ const Login_mobile_controller = async (
     banReason = "",
     banned_at = "";
   try {
-    let userid = req.body.nameValuePairs.userid;
-    let password = req.body.nameValuePairs.password;
-    if (!password || !userid)
+    const nvp = req.body?.nameValuePairs;
+    let phone = nvp?.phone;
+    let password = nvp?.password;
+    if (!password || !phone)
       return res
         .status(400)
         .json(
@@ -231,7 +234,7 @@ const Login_mobile_controller = async (
     //create a valid usermodel
     const data: any = await authService.loginUserId(
       LoginType.phone,
-      userid,
+      phone,
       password,
     );
     banDuration = data.userdata.banDuration;

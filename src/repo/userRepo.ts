@@ -208,5 +208,40 @@ return fetchDb(query,[uuid]);
       const query=`update users set isPrivate=? where userid=?`
       return fetchDb(query,[userid,status])
   }
+  // Profile edit methods
+  updateUsername=(userid:string,name:string)=>{
+    const query = `update users set username=? where userid=?`;
+    return fetchDb(query,[name,userid]);
+  }
+  checkUserIdExists=(userid:string)=>{
+    const query = `select userid from users where userid=?`;
+    return fetchDb(query,[userid]);
+  }
+  updateUserId=(userid:string,newUserid:string,sessionId:string)=>{
+    const query = `update users set userid=? , sessionId=? where userid=?`;
+    return fetchDb(query,[newUserid,sessionId,userid]);
+  }
+  updateBio=(userid:string,bio:string)=>{
+    const query = `update users set bio=? where userid=?`;
+    return fetchDb(query,[bio,userid]);
+  }
+  updateProfilePic=(userid:string,url:any)=>{
+    const query = `update users set profilepic=? where userid=?`;
+    return fetchDb(query,[url,userid]);
+  }
+  // Password reset methods
+  resetPasswordByPhone=(phone:string,hashedPassword:string,sessionId:string)=>{
+    const query = `update users set pass=? ,sessionId=? where phone=?`;
+    return fetchDb(query,[hashedPassword,sessionId,phone]);
+  }
+  resetPasswordByEmail=(email:string,hashedPassword:string,sessionId:string)=>{
+    const query = `update users set pass=?, sessionId=? where email=?`;
+    return fetchDb(query,[hashedPassword,sessionId,email]);
+  }
+  // FCM token update
+  updateFcmToken=(userid:string,token:string)=>{
+    const query = `update users set fcmToken=? where userid=?`;
+    return fetchDb(query,[token,userid]);
+  }
   
 }

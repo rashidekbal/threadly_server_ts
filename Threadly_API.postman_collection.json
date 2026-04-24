@@ -1,0 +1,922 @@
+{
+  "info": {
+    "name": "Threadly Server API",
+    "description": "Complete API collection for the Threadly social media server (TypeScript).\n\nSet the `base_url` and `auth_token` variables before running requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "otp_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login via Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login/email", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "email"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login via UserId",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"userid\": \"johndoe\",\n    \"password\": \"password123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login/userid", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "userid"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login via Mobile",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"phone\": \"9876543210\",\n    \"password\": \"password123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/auth/login/mobile", "host": ["{{base_url}}"], "path": ["api", "auth", "login", "mobile"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('auth_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register via Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{otp_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"email\": \"user@example.com\",\n    \"username\": \"John Doe\",\n    \"userid\": \"johndoe\",\n    \"password\": \"password123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register/email", "host": ["{{base_url}}"], "path": ["api", "auth", "register", "email"] }
+          }
+        },
+        {
+          "name": "Register via Mobile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{otp_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"phone\": \"9876543210\",\n    \"username\": \"John Doe\",\n    \"userid\": \"johndoe\",\n    \"password\": \"password123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/auth/register/mobile", "host": ["{{base_url}}"], "path": ["api", "auth", "register", "mobile"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "OTP",
+      "item": [
+        {
+          "name": "Generate OTP Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"email\": \"user@example.com\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/otp/generateOtpEmail", "host": ["{{base_url}}"], "path": ["api", "otp", "generateOtpEmail"] }
+          }
+        },
+        {
+          "name": "Resend OTP Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"email\": \"user@example.com\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/otp/resendOtpEmail", "host": ["{{base_url}}"], "path": ["api", "otp", "resendOtpEmail"] }
+          }
+        },
+        {
+          "name": "Verify OTP Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"email\": \"user@example.com\",\n    \"otp\": \"123456\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/otp/verifyOtpEmail", "host": ["{{base_url}}"], "path": ["api", "otp", "verifyOtpEmail"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('otp_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forget Password - Generate OTP Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": { "type": "noauth" },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"email\": \"user@example.com\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/otp/ForgetPasswordGenerateOtpEmail", "host": ["{{base_url}}"], "path": ["api", "otp", "ForgetPasswordGenerateOtpEmail"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Forget Password",
+      "item": [
+        {
+          "name": "Reset Password via Mobile",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{otp_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"nameValuePairs\": {\n    \"password\": \"newPassword123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/ForgetPassword/Mobile", "host": ["{{base_url}}"], "path": ["api", "ForgetPassword", "Mobile"] }
+          }
+        },
+        {
+          "name": "Reset Password via Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{otp_token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"nameValuePairs\": {\n    \"password\": \"newPassword123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/ForgetPassword/Email", "host": ["{{base_url}}"], "path": ["api", "ForgetPassword", "Email"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get My Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/users/getMyData", "host": ["{{base_url}}"], "path": ["api", "users", "getMyData"] }
+          }
+        },
+        {
+          "name": "Get User by UserId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/users/getUser/:userid", "host": ["{{base_url}}"], "path": ["api", "users", "getUser", ":userid"], "variable": [{ "key": "userid", "value": "johndoe" }] }
+          }
+        },
+        {
+          "name": "Get User by UUID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/users/getUserByUUid/:uuid", "host": ["{{base_url}}"], "path": ["api", "users", "getUserByUUid", ":uuid"], "variable": [{ "key": "uuid", "value": "some-uuid" }] }
+          }
+        },
+        {
+          "name": "Get Suggested Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/users/getUsers", "host": ["{{base_url}}"], "path": ["api", "users", "getUsers"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Add Image Post",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "image", "type": "file", "src": "" },
+                { "key": "caption", "value": "My awesome post!", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/posts/addImagePost", "host": ["{{base_url}}"], "path": ["api", "posts", "addImagePost"] }
+          }
+        },
+        {
+          "name": "Add Video Post",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "video", "type": "file", "src": "" },
+                { "key": "caption", "value": "Check this out!", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/posts/addVideoPost", "host": ["{{base_url}}"], "path": ["api", "posts", "addVideoPost"] }
+          }
+        },
+        {
+          "name": "Remove Post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/removePost/:postid", "host": ["{{base_url}}"], "path": ["api", "posts", "removePost", ":postid"], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Get Image Feed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/getImagePostsFeed", "host": ["{{base_url}}"], "path": ["api", "posts", "getImagePostsFeed"] }
+          }
+        },
+        {
+          "name": "Get Video Feed",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/getVideoPostsFeed", "host": ["{{base_url}}"], "path": ["api", "posts", "getVideoPostsFeed"] }
+          }
+        },
+        {
+          "name": "Get User Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/getUserPosts/:userid?page=1", "host": ["{{base_url}}"], "path": ["api", "posts", "getUserPosts", ":userid"], "query": [{ "key": "page", "value": "1" }], "variable": [{ "key": "userid", "value": "johndoe" }] }
+          }
+        },
+        {
+          "name": "Get Post Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/getPost/:postid", "host": ["{{base_url}}"], "path": ["api", "posts", "getPost", ":postid"], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Record Post View",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"uuid\": \"viewer-uuid\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/posts/postViewed/:postid", "host": ["{{base_url}}"], "path": ["api", "posts", "postViewed", ":postid"], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Get Liked By Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/:postid/likedby?page=1", "host": ["{{base_url}}"], "path": ["api", "posts", ":postid", "likedby"], "query": [{ "key": "page", "value": "1" }], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Get Shared By Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/posts/:postid/sharedby?page=1", "host": ["{{base_url}}"], "path": ["api", "posts", ":postid", "sharedby"], "query": [{ "key": "page", "value": "1" }], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Share Post",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"senderUserId\": \"johndoe\",\n    \"receiverUserId\": \"janedoe\",\n    \"postid\": \"1\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/posts/share", "host": ["{{base_url}}"], "path": ["api", "posts", "share"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "item": [
+        {
+          "name": "Like Post",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/like/likePost/:postid", "host": ["{{base_url}}"], "path": ["api", "like", "likePost", ":postid"], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Unlike Post",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/like/unlikePost/:postid", "host": ["{{base_url}}"], "path": ["api", "like", "unlikePost", ":postid"], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Like Story",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/like/likeStory/:storyid", "host": ["{{base_url}}"], "path": ["api", "like", "likeStory", ":storyid"], "variable": [{ "key": "storyid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Unlike Story",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/like/unlikeStory/:storyid", "host": ["{{base_url}}"], "path": ["api", "like", "unlikeStory", ":storyid"], "variable": [{ "key": "storyid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Like Comment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/like/likeAComment/:commentid", "host": ["{{base_url}}"], "path": ["api", "like", "likeAComment", ":commentid"], "variable": [{ "key": "commentid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Unlike Comment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/like/unlikeAComment/:commentid", "host": ["{{base_url}}"], "path": ["api", "like", "unlikeAComment", ":commentid"], "variable": [{ "key": "commentid", "value": "1" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"postid\": 1,\n    \"comment\": \"Great post!\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/comment/addComment", "host": ["{{base_url}}"], "path": ["api", "comment", "addComment"] }
+          }
+        },
+        {
+          "name": "Remove Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"postid\": 1,\n    \"commentid\": 1\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/comment/removeComment", "host": ["{{base_url}}"], "path": ["api", "comment", "removeComment"] }
+          }
+        },
+        {
+          "name": "Get Comments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/comment/getComments/:postid", "host": ["{{base_url}}"], "path": ["api", "comment", "getComments", ":postid"], "variable": [{ "key": "postid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Reply to Comment",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"postId\": 1,\n    \"comment\": \"Nice reply!\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/comment/replyTo/:commentId", "host": ["{{base_url}}"], "path": ["api", "comment", "replyTo", ":commentId"], "variable": [{ "key": "commentId", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Get Comment Replies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/comment/getCommentReplies/:commentId", "host": ["{{base_url}}"], "path": ["api", "comment", "getCommentReplies", ":commentId"], "variable": [{ "key": "commentId", "value": "1" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Follow",
+      "item": [
+        {
+          "name": "Follow User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"followingid\": \"janedoe\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/follow/follow", "host": ["{{base_url}}"], "path": ["api", "follow", "follow"] }
+          }
+        },
+        {
+          "name": "Follow User V2 (Privacy Aware)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"followingid\": \"janedoe\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/follow/follow/V2", "host": ["{{base_url}}"], "path": ["api", "follow", "follow", "V2"] }
+          }
+        },
+        {
+          "name": "Unfollow User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"followingid\": \"janedoe\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/follow/unfollow", "host": ["{{base_url}}"], "path": ["api", "follow", "unfollow"] }
+          }
+        },
+        {
+          "name": "Cancel Follow Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"followingid\": \"janedoe\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/follow/cancelFollowRequest", "host": ["{{base_url}}"], "path": ["api", "follow", "cancelFollowRequest"] }
+          }
+        },
+        {
+          "name": "Accept Follow Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"followerId\": \"johndoe\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/follow/acceptFollowRequest", "host": ["{{base_url}}"], "path": ["api", "follow", "acceptFollowRequest"] }
+          }
+        },
+        {
+          "name": "Reject Follow Request",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/follow/rejectFollowRequest/:followerId", "host": ["{{base_url}}"], "path": ["api", "follow", "rejectFollowRequest", ":followerId"], "variable": [{ "key": "followerId", "value": "johndoe" }] }
+          }
+        },
+        {
+          "name": "Get Followers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/follow/getFollowers/:userid", "host": ["{{base_url}}"], "path": ["api", "follow", "getFollowers", ":userid"], "variable": [{ "key": "userid", "value": "johndoe" }] }
+          }
+        },
+        {
+          "name": "Get Following",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/follow/getFollowings/:userid", "host": ["{{base_url}}"], "path": ["api", "follow", "getFollowings", ":userid"], "variable": [{ "key": "userid", "value": "johndoe" }] }
+          }
+        },
+        {
+          "name": "Get All Follow Requests",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/follow/getAllFollowRequests", "host": ["{{base_url}}"], "path": ["api", "follow", "getAllFollowRequests"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stories",
+      "item": [
+        {
+          "name": "Add Story",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "media", "type": "file", "src": "" },
+                { "key": "type", "value": "image", "type": "text", "description": "image or video" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/story/addStory", "host": ["{{base_url}}"], "path": ["api", "story", "addStory"] }
+          }
+        },
+        {
+          "name": "Remove Story",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/story/removeStory/:storyid", "host": ["{{base_url}}"], "path": ["api", "story", "removeStory", ":storyid"], "variable": [{ "key": "storyid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Get All Stories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/story/getStories", "host": ["{{base_url}}"], "path": ["api", "story", "getStories"] }
+          }
+        },
+        {
+          "name": "Get My Stories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/story/getMyStories", "host": ["{{base_url}}"], "path": ["api", "story", "getMyStories"] }
+          }
+        },
+        {
+          "name": "Get User Stories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/story/getStories/:userid", "host": ["{{base_url}}"], "path": ["api", "story", "getStories", ":userid"], "variable": [{ "key": "userid", "value": "johndoe" }] }
+          }
+        },
+        {
+          "name": "Record Story View",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"uuid\": \"viewer-uuid\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/story/storyViewed/:storyid", "host": ["{{base_url}}"], "path": ["api", "story", "storyViewed", ":storyid"], "variable": [{ "key": "storyid", "value": "1" }] }
+          }
+        },
+        {
+          "name": "Get Story Viewed By",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/story/:storyid/viewedby?page=1", "host": ["{{base_url}}"], "path": ["api", "story", ":storyid", "viewedby"], "query": [{ "key": "page", "value": "1" }], "variable": [{ "key": "storyid", "value": "1" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Check Pending Messages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/messages/checkPendingMessages", "host": ["{{base_url}}"], "path": ["api", "messages", "checkPendingMessages"] }
+          }
+        },
+        {
+          "name": "Get Pending Messages",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"senderUuid\": \"sender-uuid-here\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/messages/getPendingMessages", "host": ["{{base_url}}"], "path": ["api", "messages", "getPendingMessages"] }
+          }
+        },
+        {
+          "name": "Send Message",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"MsgUid\": \"unique-msg-id\",\n    \"replyToMessageId\": null,\n    \"senderProfilePic\": \"https://example.com/pic.jpg\",\n    \"senderName\": \"John\",\n    \"senderUserId\": \"johndoe\",\n    \"senderUuid\": \"sender-uuid\",\n    \"receiverUuid\": \"receiver-uuid\",\n    \"type\": \"text\",\n    \"msg\": \"Hello!\",\n    \"timestamp\": 1700000000000,\n    \"postLink\": null,\n    \"postId\": null\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/messages/sendMessage", "host": ["{{base_url}}"], "path": ["api", "messages", "sendMessage"] }
+          }
+        },
+        {
+          "name": "Update Message Seen Status",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"senderUUid\": \"sender-uuid\",\n    \"receiverUUid\": \"receiver-uuid\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/messages/updateMessageDeliveryStatus", "host": ["{{base_url}}"], "path": ["api", "messages", "updateMessageDeliveryStatus"] }
+          }
+        },
+        {
+          "name": "Upload Media",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "media", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/messages/uploadMedia", "host": ["{{base_url}}"], "path": ["api", "messages", "uploadMedia"] }
+          }
+        },
+        {
+          "name": "Get All Chats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/messages/getAllChats", "host": ["{{base_url}}"], "path": ["api", "messages", "getAllChats"] }
+          }
+        },
+        {
+          "name": "Delete Message For Me",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"MsgUid\": \"msg-uid-here\",\n    \"Role\": \"sender\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/messages/deleteMessageForMe", "host": ["{{base_url}}"], "path": ["api", "messages", "deleteMessageForMe"] }
+          }
+        },
+        {
+          "name": "Unsend Message",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"MsgUid\": \"msg-uid-here\",\n    \"receiverUUid\": \"receiver-uuid\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/messages/unSendMessage", "host": ["{{base_url}}"], "path": ["api", "messages", "unSendMessage"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Edit Username",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"name\": \"New Display Name\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/profile/edit/username", "host": ["{{base_url}}"], "path": ["api", "profile", "edit", "username"] }
+          }
+        },
+        {
+          "name": "Edit UserId",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"newUserId\": \"newuserid123\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/profile/edit/userid", "host": ["{{base_url}}"], "path": ["api", "profile", "edit", "userid"] }
+          }
+        },
+        {
+          "name": "Edit Bio",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"bioText\": \"This is my new bio!\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/profile/edit/bio", "host": ["{{base_url}}"], "path": ["api", "profile", "edit", "bio"] }
+          }
+        },
+        {
+          "name": "Edit Profile Picture",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "image", "type": "file", "src": "" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/api/profile/edit/Profile", "host": ["{{base_url}}"], "path": ["api", "profile", "edit", "Profile"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search Accounts & Reels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/search?target=john", "host": ["{{base_url}}"], "path": ["api", "search"], "query": [{ "key": "target", "value": "john" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Privacy",
+      "item": [
+        {
+          "name": "Set Account Private",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/privacy/setPrivate", "host": ["{{base_url}}"], "path": ["api", "privacy", "setPrivate"] }
+          }
+        },
+        {
+          "name": "Set Account Public",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/privacy/setPublic", "host": ["{{base_url}}"], "path": ["api", "privacy", "setPublic"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "FCM",
+      "item": [
+        {
+          "name": "Update FCM Token",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameValuePairs\": {\n    \"token\": \"fcm-device-token-here\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/api/fcm/updateToken", "host": ["{{base_url}}"], "path": ["api", "fcm", "updateToken"] }
+          }
+        }
+      ]
+    }
+  ]
+}

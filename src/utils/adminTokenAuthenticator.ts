@@ -1,7 +1,7 @@
-import "dotenv/config";
+import { getAdminEmail, getAdminPassword } from "./envValuesAccessInterface.js";
 export default function validateAdminCreds(cred:{email:string,password:string}) {
   return (
-    process.env.ADMIN_EMAIL == cred.email &&
-    process.env.ADMIN_PASSWORD == cred.password
+    getAdminEmail() == cred.email &&
+    getAdminPassword() == cred.password
   );
 }

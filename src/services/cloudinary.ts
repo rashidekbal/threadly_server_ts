@@ -1,13 +1,13 @@
 import logger, { formErrorBody } from "../utils/pino.js";
 import { v2 as cloudinary } from "cloudinary";
-import "dotenv/config";
+import { getCloudinaryCloudName, getCloudinaryApiKey, getCloudinarySecretKey } from "../utils/envValuesAccessInterface.js";
 import fs from "fs";
 
 // Configuration
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET_KEY,
+  cloud_name: getCloudinaryCloudName(),
+  api_key: getCloudinaryApiKey(),
+  api_secret: getCloudinarySecretKey(),
 });
 
 // Upload an image

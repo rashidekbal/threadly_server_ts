@@ -187,19 +187,55 @@ export default class FollowService {
     }
   };
 
-  // const notifyUnFollow = async (followerId, followingId) => {
-  //   const getFollowingDetailsQuery =
-  //     "select fcmToken ,userid from users where userid=? limit 1";
-  //   try {
-  //     let following = await fetchDb(getFollowingDetailsQuery, [followingId]);
-  //     if (following.length > 0 && following[0].fcmToken != null) {
-  //       const token = following[0].fcmToken;
-  //       await notify_UnFollow_via_fcm(token, followerId, following[0].userid);
-  //     } else {
-  //       // console.log("no fcm token");
-  //     }
-  //   } catch (error) {
-  //    logger.error(formErrorBody(error,null));
-  //   }
-  // };
+  follow = async (followerId: string, followingId: string) => {
+    await this.followRepo.addFollow(followerId, followingId, true);
+    this.notifyNewFollower(followerId, followingId);
+  };
+
+  unfollow = async (followerId: string, followingId: string) => {
+    await this.followRepo.unfollow(followerId, followingId);
+    this.notifyUnFollow(followerId, followingId);
+  };
+
+  cancelFollowRequest = async (followerId: string, followingId: string) => {
+    await this.followRepo.cancelFollowRequest(followerId, followingId);
+    this.notifyFollowRequestCancelled(followerId, followingId);
+  };
+
+  approveFollowRequest = async (followerId: string, followingId: string) => {
+    await this.followRepo.approveAllFollowRequests(followingId);
+    // Use the specific query pattern from original: update where followerid=? and followingid=? and isApproved=false
+    this.notifyFollowRequestApproved(followerId, followingId);
+  };
+
+  rejectFollowRequest = async (followerId: string, followingId: string) => {
+    await this.followRepo.rejectFollowRequest(followerId, followingId);
+  };
+
+  notifyFollowRequestCancelled = async (followerId: string, followingId: string) => {
+    try {
+      let following: any = await this.followRepo.getFollowerDetails(followingId);
+      if (following.length > 0 && following[0].fcmToken != null) {
+        const token = following[0].fcmToken;
+        // FCM notification - to be enabled later
+        // await fcmService.notify_followRequestCancel_via_fcm(token, followerId, following[0].userid);
+      }
+    } catch (error) {
+      logger.error(formErrorBody(error as string, null, null));
+    }
+  };
+
+  notifyUnFollow = async (followerId: string, followingId: string) => {
+    try {
+      let following: any = await this.followRepo.getFollowerDetails(followingId);
+      if (following.length > 0 && following[0].fcmToken != null) {
+        const token = following[0].fcmToken;
+        // FCM notification - to be enabled later
+        // await fcmService.notify_UnFollow_via_fcm(token, followerId, following[0].userid);
+      }
+    } catch (error) {
+      logger.error(formErrorBody(error as string, null, null));
+    }
+  };
 }
+

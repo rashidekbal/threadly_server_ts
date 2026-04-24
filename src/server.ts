@@ -1,9 +1,9 @@
 import server from "./app.js";
-import "dotenv/config"
 import connection from "./db/connection.js";
 import { QueryError } from "mysql2";
 import { fcmService } from "./services/index.service.js";
-const port = process.env.PORT;
+import { getPort } from "./utils/envValuesAccessInterface.js";
+const port = getPort();
 connection.connect((err:QueryError|null) => {
   if (err) {
     console.log(err);
