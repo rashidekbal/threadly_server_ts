@@ -123,7 +123,7 @@ const Login_email_controller = async (
     banned_at = "";
   try {
     const nvp = req.body?.nameValuePairs;
-    let email = nvp?.email;
+    let email = nvp?.userid;
     let password = nvp?.password;
     if (!password || !email)
       return res
@@ -219,7 +219,7 @@ const Login_mobile_controller = async (
     banned_at = "";
   try {
     const nvp = req.body?.nameValuePairs;
-    let phone = nvp?.phone;
+    let phone = nvp?.userid;
     let password = nvp?.password;
     if (!password || !phone)
       return res
