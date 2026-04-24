@@ -2,6 +2,7 @@ import fetchDb from "../utils/dbQueryHelper.js";
 
 export default class FollowRepo {
   getFollowRequests = (userid: string) => {
+    
     const getPendingApprovals = `select * from followers where followingid=? and isApproved=false`;
     return fetchDb(getPendingApprovals, [userid]);
   };
@@ -30,5 +31,36 @@ export default class FollowRepo {
      const query=`select isApproved from followers where followerid=? and followingid=?`;
      return fetchDb(query,[followerid,followigid]);
 
+  }
+  getFollowers=(requestingUser:string,requestedUser:string,page:number)=>{
+    let query = `select users.uuid,
+        users.userid,
+        users.isPrivate,
+        users.username,
+        users.profilepic,
+        count(distinct chkIsFllowed.followerid) AS ifFollowed,
+        coalesce(chkIsFllowed.isApproved,-1) as isApproved
+        from followers left join users on followers.followerid = users.userid 
+        left join followers as chkIsFllowed on users.userid=chkIsFllowed.followingid and chkIsFllowed.followerid=?  
+        where followers.followingid=? and   followers.isApproved=true group by users.userid
+    `;
+    return fetchDb(query,[requestingUser,requestedUser]);
+  }
+  getFollowings=(requistingUser:string,requestedUser:string,page:number)=>{
+    let query = `select users.uuid ,
+  users.userid ,
+  users.isPrivate,
+   users.username,
+   users.profilepic,
+   CASE WHEN chkIsFllowed.followid IS NOT NULL THEN 1 ELSE 0 END AS ifFollowed,
+   coalesce(chkIsFllowed.isApproved,-1) as isApproved  from followers 
+   left join users on followers.followingid = users.userid
+    left join followers as chkIsFllowed on users.userid=chkIsFllowed.followingid and chkIsFllowed.followerid=? 
+     where followers.followerid=? and followers.isApproved=true group by users.userid`;
+     return fetchDb(query,[requistingUser,requestedUser])
+  }
+  getPendingFollowRequestWithUserDetails=(userid:string,page:number)=>{
+    const query="select us.userid,us.username,us.profilepic from followers as flws left join users as us on flws.followerid=us.userid where flws.followingid=? and isApproved=false"
+    return fetchDb(query,[userid]);
   }
 }

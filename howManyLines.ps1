@@ -1,4 +1,4 @@
-$lines = Get-ChildItem .\src -Recurse -Filter *.js |
+$lines = Get-ChildItem .\src -Recurse -Filter *.ts |
     Get-Content |
     Measure-Object -Line
 

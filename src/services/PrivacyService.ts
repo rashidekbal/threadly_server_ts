@@ -10,8 +10,7 @@ export default class PrivacyService {
   isUserPrivate = async (userid: string) => {
     return new Promise(async (resolve, reject) => {
       try {
-        let response = await this.userRepo.getUserPrivacyInfo(userid);
-        if (!(response instanceof Array)) return reject("invalid userid");
+        let response:any = await this.userRepo.getUserPrivacyInfo(userid);
         if (response.length == 0) return reject(null);
         const isPrivate = response[0].isPrivate == 1;
         resolve(isPrivate);

@@ -23,7 +23,18 @@ export default class FollowService {
       throw error;
     }
   };
+  getFollowers=async(requestingUser:string,requestedUser:string,page:number=1)=>{
+    return this.followRepo.getFollowers(requestingUser,requestedUser,page);
 
+  }
+  getFollowings=async(requestingUser:string,requestedUser:string,page:number=1)=>{
+    return this.followRepo.getFollowings(requestingUser,requestedUser,page);
+
+  }
+  getPendingFollowRequestWithUserDetails=(userid:string,page:number=1)=>{
+    return this.followRepo.getPendingFollowRequestWithUserDetails(userid,page);
+
+  }
   approveAllPendingFollowRequest = async (userid: string) => {
     try {
       const pendingApprovals = await this.followRepo.getFollowRequests(userid);
