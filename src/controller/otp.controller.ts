@@ -170,7 +170,7 @@ async function verifyOtpEmail(req: express.Request, res: express.Response) {
           ),
         );
     // Generate a JWT token for the user
-    let token = jwt.sign({ email: email }, getJWT_secretToken(), {
+    let token = jwt.sign(email, getJWT_secretToken(), {
       expiresIn: "5m", // Token expires in 5 minutes
     });
 

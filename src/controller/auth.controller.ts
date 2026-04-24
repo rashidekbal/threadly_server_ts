@@ -335,7 +335,7 @@ async function registerUserEmailController(
 ) {
 
   try {
-    let email = req.body.email; // Email of the user
+    let email =req.body.auth_base; 
     let password = req.body.nameValuePairs.password; // Password provided by user
     let dob = req.body.nameValuePairs.dob; // Date of birth of the user
     let username = req.body.nameValuePairs.username;
@@ -425,7 +425,7 @@ async function registerUserPhoneController(
 ) {
 
   try {
-    let phone= req.body.phone; // Email of the user
+    let phone= req.body.auth_base;
     let password = req.body.nameValuePairs.password; // Password provided by user
     let dob = req.body.nameValuePairs.dob; // Date of birth of the user
     let username = req.body.nameValuePairs.username;
