@@ -310,7 +310,9 @@ const logout_controller = async (
   req: express.Request,
   res: express.Response,
 ) => {
-  const userid = req.body.userid;
+  let userid = req.auth?.userid;
+  if (!userid)
+    return res.status(403).json(new ApiError(403, apiErrorType.AUTH_ERROR, new ErrorDetails("please provide a valid jwt token")));
   try {
     await authService.logoutUser(userid);
     res.json(new Response(200, { msg: "ok" }));
