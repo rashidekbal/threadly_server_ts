@@ -524,6 +524,7 @@ async function registerUserPhoneController(
 
 
 async function ResetPasswordController(req:express.Request,res:express.Response){
+  console.log("request received")
   const userid=req.auth?.userid;
   const oldPassword=req.body.nameValuePairs.oldPassword;
   const newPassword=req.body.nameValuePairs.newPassword;

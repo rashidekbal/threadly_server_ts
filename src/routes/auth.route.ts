@@ -7,6 +7,7 @@ import {
   logout_controller,
   registerUserEmailController,
   registerUserPhoneController,
+  ResetPasswordController,
 } from "../controller/auth.controller.js";
 import verifyToken from "../middlewares/authorization.js";
 import verifyOtpSignedToken from "../middlewares/verifySignedOtpToken.js";
@@ -18,5 +19,6 @@ router.route("/login/userid").post(Login_userid_controller);
 router.route("/register/mobile").post( verifyOtpSignedToken,registerUserPhoneController);
 router.post("/register/email", verifyOtpSignedToken, registerUserEmailController);
 router.route("/logout").get(verifyToken,logout_controller);
+router.route("/resetPassword").post(verifyToken,ResetPasswordController);
 
 export default router;
