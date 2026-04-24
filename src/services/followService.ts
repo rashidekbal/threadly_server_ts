@@ -217,8 +217,7 @@ export default class FollowService {
       let following: any = await this.followRepo.getFollowerDetails(followingId);
       if (following.length > 0 && following[0].fcmToken != null) {
         const token = following[0].fcmToken;
-        // FCM notification - to be enabled later
-        // await fcmService.notify_followRequestCancel_via_fcm(token, followerId, following[0].userid);
+        await fcmService.notify_followRequestCancel_via_fcm(token, followerId, following[0].userid);
       }
     } catch (error) {
       logger.error(formErrorBody(error as string, null, null));
@@ -230,8 +229,7 @@ export default class FollowService {
       let following: any = await this.followRepo.getFollowerDetails(followingId);
       if (following.length > 0 && following[0].fcmToken != null) {
         const token = following[0].fcmToken;
-        // FCM notification - to be enabled later
-        // await fcmService.notify_UnFollow_via_fcm(token, followerId, following[0].userid);
+        await fcmService.notify_UnFollow_via_fcm(token, followerId, following[0].userid);
       }
     } catch (error) {
       logger.error(formErrorBody(error as string, null, null));

@@ -1,16 +1,11 @@
 import logger, { formErrorBody } from "../utils/pino.js";
-// import { notifyStatus_via_Fcm, notifyUnsendMessageViaFcm, sendMessage } from "../Fcm/FcmService.js";
 import { socketIo } from "../app.js"
 import fetchDb from "../utils/dbQueryHelper.js";
 import UserRepo from "../repo/userRepo.js";
-// import {
-//   addMessageToDb, getBasicUserDetailsFromUUid,
-//   getFcmTokenWithUUid, getUUidFromUserId,
-// } from "../utils/ReusableFunctions.js";
 import { addUser, getSocketId, removeUser } from "./ConnectedUsers.js";
 import { addMessageToDb } from "../repo/messageRepo.js";
 import message from "../types/message.type.js";
-import messageType from "../constants/messageTypeEnum.js";
+import { fcmService } from "../services/index.service.js";
 const userRepo = new UserRepo();
 
 function setSocketFunctions(socket: any, io: any) {
@@ -90,26 +85,26 @@ function setSocketFunctions(socket: any, io: any) {
           const receiverUserid = response[0].userid;
 
           try {
-            // const messageToSend = {
-            //   msg: data.msg,
-            //   senderUuid: data.senderUuid,
-            //   receiverUuid: data.receiverUuid,
-            //   receiverUserId: receiverUserid,
-            //   username: data.senderName,
-            //   userid: data.senderUserId,
-            //   profile,
-            //   MsgUid,
-            //   ReplyTOMsgUid,
-            //   type,
-            //   postId: String(data.postId),
-            //   link: data.link,
-            //   timestamp,
-            //   deliveryStatus: "-1",
-            //   isDeleted: "false",
-            //   notificationText: data.notificationText ? data.notificationText : " "
-            // };
+            const messageToSend = {
+              msg: data.msg,
+              senderUuid: data.senderUuid,
+              receiverUuid: data.receiverUuid,
+              receiverUserId: receiverUserid,
+              username: data.senderName,
+              userid: data.senderUserId,
+              profile,
+              MsgUid,
+              ReplyTOMsgUid,
+              type,
+              postId: String(data.postId),
+              link: data.link,
+              timestamp,
+              deliveryStatus: "-1",
+              isDeleted: "false",
+              notificationText: data.notificationText ? data.notificationText : " "
+            };
 
-            // await sendMessage(token, messageToSend);
+            await fcmService.sendMessage(token, messageToSend);
 
             socket.emit("MsgStatusUpdate", {
               MsgUid,
@@ -301,7 +296,7 @@ async function notifyStatusChanged(uuid: string, messageUid: string, status: num
 
     if (fcmToken == null) return;
 
-    // await notifyStatus_via_Fcm(fcmToken, messageUid, status, isDeleted, userId);
+    await fcmService.notifyStatus_via_Fcm(fcmToken, messageUid, status, isDeleted, userId);
 
   } catch (error) {
     logger.error(formErrorBody(error as string, null, null));
@@ -319,10 +314,10 @@ async function notifyUnSendMessage(ReceiverUuid: string, messageUid: string) {
   }
 
   try {
-    let fcmToken = await userRepo.getFcmTokenWithUUid(ReceiverUuid);
+    let fcmToken = await userRepo.getFcmTokenWithUUid(ReceiverUuid) as string;
 
     if (fcmToken != null) {
-      // await notifyUnsendMessageViaFcm(fcmToken, messageUid, ReceiverUuid);
+      await fcmService.notifyUnsendMessageViaFcm(fcmToken, messageUid, ReceiverUuid);
     }
 
   } catch (error) {

@@ -8,6 +8,8 @@ import {
   uploadOnColudinaryFromRam,
   uploadOnColudinaryviaLocalPath,
 } from "./cloudinary.js";
+import { fcmService } from "./index.service.js";
+import logger, { formErrorBody } from "../utils/pino.js";
 
 export default class MessageService {
   messageRepo: MessageRepo;
@@ -75,14 +77,44 @@ export default class MessageService {
     const hasValidToken = response.length > 0 && response[0].fcmToken != null;
 
     if (hasValidToken) {
-      // FCM send - to be enabled later
-      const msgData: message = {
-        messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
-        type, message: msgContent, postid: postId, postLink: link,
-        creationTime: timestamp, deliveryStatus: 2, isDeleted: false
+      const token = response[0].fcmToken;
+      const messageToSend = {
+        msg: msgContent,
+        senderUuid,
+        receiverUuid,
+        receiverUserId: "",
+        username: senderUsername,
+        userid: senderUserid,
+        profile: senderProfile,
+        MsgUid: messageUid,
+        ReplyTOMsgUid: replyTo,
+        type,
+        postId: String(postId),
+        link,
+        timestamp,
+        deliveryStatus: "-1",
+        isDeleted: "false",
+        notificationText: data.notificationText ? data.notificationText : "sent a message",
       };
-      await this.messageRepo.addMessageToDb(msgData);
-      return { MsgUid: messageUid, deliveryStatus: 2 };
+      try {
+        await fcmService.sendMessage(token, messageToSend);
+        const msgData: message = {
+          messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
+          type, message: msgContent, postid: postId, postLink: link,
+          creationTime: timestamp, deliveryStatus: 2, isDeleted: false
+        };
+        await this.messageRepo.addMessageToDb(msgData);
+        return { MsgUid: messageUid, deliveryStatus: 2 };
+      } catch (fcmError) {
+        logger.error(formErrorBody(fcmError as string, null, null));
+        const msgData: message = {
+          messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
+          type, message: msgContent, postid: postId, postLink: link,
+          creationTime: timestamp, deliveryStatus: 1, isDeleted: false
+        };
+        await this.messageRepo.addMessageToDb(msgData);
+        return { MsgUid: messageUid, deliveryStatus: 1 };
+      }
     }
 
     // No FCM token

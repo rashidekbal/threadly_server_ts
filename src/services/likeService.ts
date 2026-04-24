@@ -1,10 +1,13 @@
 import LikeRepo from "../repo/likeRepo.js";
 import logger, { formErrorBody } from "../utils/pino.js";
+import FcmService from "./fcmService.js";
 
 export default class LikeService {
   likeRepo: LikeRepo;
-  constructor(likeRepo: LikeRepo) {
+  private fcm: FcmService | null;
+  constructor(likeRepo: LikeRepo, fcm: FcmService | null = null) {
     this.likeRepo = likeRepo;
+    this.fcm = fcm;
   }
 
   likePost = async (userid: string, postid: number) => {
@@ -49,7 +52,16 @@ export default class LikeService {
         const ReceiverUserId = postDetails[0].userid;
         const postLink = postDetails[0].imageurl;
         if (username != null && token != null && postLink != null && ReceiverUserId !== userid) {
-          // FCM notification - to be enabled later
+          await this.fcm?.notify_postLiked_via_fcm({
+            token,
+            postId: postId,
+            postLink,
+            userprofile: String(userDetails[0].profilepic ? userDetails[0].profilepic : "null"),
+            username,
+            userid,
+            insertId: String(insertId),
+            ReceiverUserId,
+          });
         }
       }
     } catch (e) {
@@ -63,7 +75,12 @@ export default class LikeService {
       if (postDetails.length > 0) {
         const token = postDetails[0].fcmToken;
         if (token != null && userId != postDetails[0].userid) {
-          // FCM notification - to be enabled later
+          await this.fcm?.notify_post_unliked_via_fcm({
+            token,
+            userId,
+            postId,
+            ReceiverUserId: postDetails[0].userid,
+          });
         }
       }
     } catch (e) {
@@ -78,7 +95,16 @@ export default class LikeService {
       if (commentDetails.length > 0 && userDetails.length > 0) {
         const token = commentDetails[0].fcmToken;
         if (token != null && commentDetails[0].userid != userid) {
-          // FCM notification - to be enabled later
+          await this.fcm?.notifyCommentLike_via_fcm({
+            token,
+            userid,
+            username: userDetails[0].username,
+            profile: String(userDetails[0].profilepic ? userDetails[0].profilepic : "null"),
+            postid: String(commentDetails[0].postid),
+            commentid: commentId,
+            postLink: commentDetails[0].imageurl,
+            ReceiverUserId: commentDetails[0].userid,
+          });
         }
       }
     } catch (e) {
@@ -92,7 +118,12 @@ export default class LikeService {
       if (commentDetails.length > 0) {
         const token = commentDetails[0].fcmToken;
         if (token != null && commentDetails[0].userid != userid) {
-          // FCM notification - to be enabled later
+          await this.fcm?.notifyCommentUnlike_via_fcm({
+            token,
+            userid,
+            commentid: commentId,
+            ReceiverUserId: commentDetails[0].userid,
+          });
         }
       }
     } catch (e) {
