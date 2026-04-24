@@ -14,7 +14,7 @@ function verifyOtpSignedToken(req:express.Request, res:express.Response, next:Ne
   if (token ==null)return res.status(401).json(new ApiError(401,apiErrorType.AUTH_ERROR ,new ErrorDetails("please provide a auth token in header")));
   try {
     const result=jwt.verify(token,getJWT_secretToken())as JwtPayload;
-    req.body.auth_base=result;
+    req.body.auth_base=result.auth_base;
     next();
   } catch (error) {
      logger.error(formErrorBody(error as string,null,req));

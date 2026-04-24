@@ -16,6 +16,7 @@ import ErrorEnum from "../constants/errorsEnum.js";
 import BanType from "../constants/banTypeEnum.js";
 import LoginType from "../constants/loginTypeEnum.js";
 import registerUserType from "../types/registerUserType.js";
+import { isvalidEmail } from "../utils/regex.js";
 
 const Login_userid_controller = async (
   req: express.Request,
@@ -341,7 +342,7 @@ async function registerUserEmailController(
     let username = req.body.nameValuePairs.username;
 
     // Check for missing required fields
-    if (!email || !password || !dob || !username) {
+    if (!isvalidEmail(email) || !password || !dob || !username) {
       return res
         .status(400)
         .json(
@@ -431,7 +432,7 @@ async function registerUserPhoneController(
     let username = req.body.nameValuePairs.username;
 
     // Check for missing required fields
-    if (!phone || !password || !dob || !username) {
+    if (!(phone instanceof Number) || !password || !dob || !username) {
       return res
         .status(400)
         .json(
