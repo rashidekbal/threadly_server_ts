@@ -123,7 +123,7 @@ const Login_email_controller = async (
     banned_at = "";
   try {
     const nvp = req.body?.nameValuePairs;
-    let email = nvp?.email;
+    let email = nvp?.userid;
     let password = nvp?.password;
     if (!password || !email)
       return res
@@ -219,7 +219,7 @@ const Login_mobile_controller = async (
     banned_at = "";
   try {
     const nvp = req.body?.nameValuePairs;
-    let phone = nvp?.phone;
+    let phone = nvp?.userid;
     let password = nvp?.password;
     if (!password || !phone)
       return res
@@ -310,7 +310,9 @@ const logout_controller = async (
   req: express.Request,
   res: express.Response,
 ) => {
-  const userid = req.body.userid;
+  let userid = req.auth?.userid;
+  if (!userid)
+    return res.status(403).json(new ApiError(403, apiErrorType.AUTH_ERROR, new ErrorDetails("please provide a valid jwt token")));
   try {
     await authService.logoutUser(userid);
     res.json(new Response(200, { msg: "ok" }));
