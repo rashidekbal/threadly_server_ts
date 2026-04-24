@@ -1,9 +1,8 @@
-// import {StartServiceFcm } from "./src/Fcm/FcmService.js";
 import server from "./app.js";
-import "dotenv/config";
 import connection from "./db/connection.js";
 import { fcmService } from "./services/index.service.js";
-const port = process.env.PORT;
+import { getPort } from "./utils/envValuesAccessInterface.js";
+const port = getPort();
 connection.connect((err) => {
     if (err) {
         console.log(err);

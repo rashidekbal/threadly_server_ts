@@ -2,7 +2,7 @@ import http from "http";
 import cors from "cors"
 import { Server } from "socket.io";
 import express from "express";
-import OptRoute from "./routes/otp.route.js";
+import otpRoute from "./routes/otp.route.js";
 import postRoute from "./routes/post.route.js";
 import LikeRouter from "./routes/like.route.js";
 import followRoute from "./routes/follow.route.js";
@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
   res.send("welcome");
 });
 //routes
-app.use("/api/otp", OptRoute);
+app.use("/api/otp", otpRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/ForgetPassword", ForgetPasswordRoute);
 app.use("/api/posts", postRoute);
