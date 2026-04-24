@@ -15,12 +15,9 @@ const removeUser = (socketId: string) => {
   });
 };
 const getuuid = (socketId: string) => {
-  Users.forEach((value, key) => {
-    if (value == socketId) {
-      return key;
-    }
-    
-  });
+  for (const [key, value] of Users) {
+    if (value === socketId) return key;
+  }
   return null;
 };
 const getSocketId = (uuid: string) => {
