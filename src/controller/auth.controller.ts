@@ -432,7 +432,7 @@ async function registerUserPhoneController(
     let username = req.body.nameValuePairs.username;
 
     // Check for missing required fields
-    if ((phone.isNaN()) || !password || !dob || !username) {
+    if ((isNaN(phone)) || !password || !dob || !username) {
       return res
         .status(400)
         .json(
