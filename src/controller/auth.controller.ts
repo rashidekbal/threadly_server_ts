@@ -522,11 +522,42 @@ async function registerUserPhoneController(
   }
 }
 
+
+async function ResetPasswordController(req:express.Request,res:express.Response){
+  const userid=req.auth?.userid;
+  const oldPassword=req.body.nameValuePairs.oldPassword;
+  const newPassword=req.body.nameValuePairs.newPassword;
+   if (!userid)
+      return res
+        .status(403)
+        .json(
+          new ApiError(
+            403,
+            apiErrorType.AUTH_ERROR,
+            new ErrorDetails("please provide a valid jwt token"),
+          ),
+        );
+ 
+  //if not all required values are provided return error 400 bad request
+  if(!oldPassword||!newPassword)return res.status(400).json(new ApiError(400,apiErrorType.API_ERROR ,new ErrorDetails("please provide all the required fields")));
+  if(newPassword.length<6)return res.status(400).json(new ApiError(400,apiErrorType.API_ERROR ,new ErrorDetails("password length must be 6")));
+  try {
+     //get user details for verification 
+   await authService.changeUserPassword({userid,oldPassword,newPassword})
+  return res.json(new Response(200,{msg:"ok"}));
+  } catch (error) {
+    logger.error(formErrorBody(error as string,500,req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR,new ErrorDetails(null)));
+  }
+
+}
+
 export {
   Login_userid_controller,
   Login_email_controller,
   Login_mobile_controller,
   logout_controller,
   registerUserEmailController,
-  registerUserPhoneController
+  registerUserPhoneController,
+  ResetPasswordController
 };

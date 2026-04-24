@@ -243,5 +243,10 @@ return fetchDb(query,[uuid]);
     const query = `update users set fcmToken=? where userid=?`;
     return fetchDb(query,[token,userid]);
   }
+
+   updateUserPassword=async(userid:string,hashedPassword:string)=>{
+    const query=`update users set pass=? where userid=?`;
+    return fetchDb(query,[hashedPassword,userid])
+}
   
 }

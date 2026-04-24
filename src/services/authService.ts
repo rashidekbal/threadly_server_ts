@@ -113,4 +113,29 @@ export default class AuthService {
     if (timeDiff >= 24 * 60 * 60 * 1000) return false;
     return true;
   };
+
+
+
+  changeUserPassword=async(data:{userid:string,oldPassword:string,newPassword:string})=>{
+    try {
+       let response:any =await this.userRepo.fetchUserforAuth(LoginType.userid,data.userid);
+  //if no associated user found send 404 may be due to old token .
+  if(response.length==0)return false;
+  const userData=response[0];
+  const serverPasswordForUser=userData.pass;
+  //compare usergiven password with server stored password
+  const isPasswodVerified=await bcryptUtil.verifyPassword(serverPasswordForUser,data.oldPassword);
+  if(!isPasswodVerified)return false;
+  //if verified 
+  const hashedPassword=await bcryptUtil.hashPassword(data.newPassword);
+  await this.userRepo.updateUserPassword(data.userid,hashedPassword);
+  //if password change failed send status 500;
+ return true;
+      
+    } catch (error) {
+      throw error;
+      
+    }
+
+  }
 }

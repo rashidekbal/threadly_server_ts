@@ -7,7 +7,7 @@ import ErrorDetails from "../constants/errorDetails.js";
 import { forgetPasswordService } from "../services/index.service.js";
 
 async function resetPasswordMobileContorler(req: express.Request, res: express.Response) {
-  let phone = req.body.phone;
+  let phone = req.body.auth_base;
   let password = req.body.nameValuePairs.password;
   if (phone.toString().length < 10 || password.length < 6)
     return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("invalid phone or password length")));
@@ -22,7 +22,7 @@ async function resetPasswordMobileContorler(req: express.Request, res: express.R
 }
 
 async function resetPasswordEmailContorler(req: express.Request, res: express.Response) {
-  let email = req.body.email;
+  let email = req.body.auth_base;
   let password = req.body.nameValuePairs.password;
   try {
     const affectedRows = await forgetPasswordService.resetPasswordByEmail(email, password);
