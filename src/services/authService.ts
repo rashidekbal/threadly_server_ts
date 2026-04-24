@@ -34,7 +34,7 @@ export default class AuthService {
         { userid: userdata.userid, sessionId },
         getJWT_secretToken(),
       );
-      return {userdata:response,token};
+      return {userdata,token};
     } catch (error) {
         if(error instanceof ServiceError){
             throw  error;
