@@ -131,27 +131,6 @@ export default class FollowService {
       logger.error(formErrorBody(error as string, null,null));
     }
   };
-
-  //  notifyFollowRequestCancelled = async (followerId, followingId) => {
-  //   // console.log("notifying to delete request");
-  //   const getFollowingDetailsQuery =
-  //     "select fcmToken ,userid from users where userid=? limit 1";
-  //   try {
-  //     let following = await fetchDb(getFollowingDetailsQuery, [followingId]);
-  //     if (following.length > 0 && following[0].fcmToken != null) {
-  //       const token = following[0].fcmToken;
-  //       await notify_followRequestCancel_via_fcm(
-  //         token,
-  //         followerId,
-  //         following[0].userid
-  //       );
-  //     } else {
-  //       // console.log("no fcm token");
-  //     }
-  //   } catch (error) {
-  //    logger.error(formErrorBody(error,null));
-  //   }
-  // };
   notifyFollowRequestApproved = async (
     followerId: string,
     followingId: string,
