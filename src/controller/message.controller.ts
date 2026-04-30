@@ -6,6 +6,7 @@ import express from "express";
 import ErrorDetails from "../constants/errorDetails.js";
 import { messageService } from "../services/index.service.js";
 import { isProductionMode } from "../utils/envValuesAccessInterface.js";
+import { get_CurrentTimeStamp_Sql_Format } from "../utils/helperFunctions.js";
 
 const getMsgPendingHistoryController = async (req: express.Request, res: express.Response) => {
   const userid = req.auth?.userid;
@@ -40,10 +41,12 @@ const sendMessageController = async (req: express.Request, res: express.Response
   if (data == null || data == undefined) {
     return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("please provide a valid request body")));
   }
-  const { senderUuid, receiverUuid, timestamp, MsgUid } = data;
+  let { senderUuid, receiverUuid, timestamp, MsgUid } = data;
   if (!senderUuid || !receiverUuid || !timestamp || !MsgUid) {
     return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("please provide all required fields")));
   }
+  
+
   try {
     const result = await messageService.sendMessage(data);
     return res.json(new Response(200, result));

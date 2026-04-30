@@ -10,6 +10,7 @@ import {
 } from "./cloudinary.js";
 import { fcmService } from "./index.service.js";
 import logger, { formErrorBody } from "../utils/pino.js";
+import { get_CurrentTimeStamp_Sql_Format } from "../utils/helperFunctions.js";
 
 export default class MessageService {
   messageRepo: MessageRepo;
@@ -35,7 +36,7 @@ export default class MessageService {
   };
 
   sendMessage = async (data: any) => {
-    const {
+    let {
       MsgUid: messageUid,
       replyToMessageId,
       senderProfilePic: senderProfile,
@@ -49,7 +50,7 @@ export default class MessageService {
       link,
       postId,
     } = data;
-
+    timestamp=get_CurrentTimeStamp_Sql_Format();
     const replyTo = replyToMessageId ? replyToMessageId : "null";
     const postlink = link ? link : " ";
 
