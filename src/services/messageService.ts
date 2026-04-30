@@ -46,12 +46,12 @@ export default class MessageService {
       type = "text",
       msg: msgContent,
       timestamp,
-      postLink,
+      link,
       postId,
     } = data;
 
     const replyTo = replyToMessageId ? replyToMessageId : "null";
-    const link = postLink ? postLink : " ";
+    const postlink = link ? link : " ";
 
     // socket delivery
     const socketId = getSocketId(receiverUuid);
@@ -60,12 +60,12 @@ export default class MessageService {
       socketIo.to(socketId).emit("StoC", {
         msg: msgContent, senderUuid, receiverUuid,
         username: senderUsername, userid: senderUserid, profile: senderProfile,
-        MsgUid: messageUid, ReplyTOMsgUid: replyTo, type, link, postId, timestamp,
+        MsgUid: messageUid, ReplyTOMsgUid: replyTo, type, link:postlink, postId, timestamp,
       });
 
       const msgData: message = {
         messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
-        type, message: msgContent, postid: postId, postLink: link,
+        type, message: msgContent, postid: postId,link:postlink,
         creationTime: timestamp, deliveryStatus: 2, isDeleted: false
       };
       await this.messageRepo.addMessageToDb(msgData);
@@ -100,7 +100,7 @@ export default class MessageService {
         await fcmService.sendMessage(token, messageToSend);
         const msgData: message = {
           messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
-          type, message: msgContent, postid: postId, postLink: link,
+          type, message: msgContent, postid: postId, link:postlink,
           creationTime: timestamp, deliveryStatus: 2, isDeleted: false
         };
         await this.messageRepo.addMessageToDb(msgData);
@@ -109,7 +109,7 @@ export default class MessageService {
         logger.error(formErrorBody(fcmError as string, null, null));
         const msgData: message = {
           messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
-          type, message: msgContent, postid: postId, postLink: link,
+          type, message: msgContent, postid: postId, link:postlink,
           creationTime: timestamp, deliveryStatus: 1, isDeleted: false
         };
         await this.messageRepo.addMessageToDb(msgData);
@@ -120,7 +120,7 @@ export default class MessageService {
     // No FCM token
     const msgData: message = {
       messageUid, replyToMessageId: replyTo, senderUUId: senderUuid, recieverUUId: receiverUuid,
-      type, message: msgContent, postid: postId, postLink: link,
+      type, message: msgContent, postid: postId, link:postlink,
       creationTime: timestamp, deliveryStatus: 1, isDeleted: false
     };
     await this.messageRepo.addMessageToDb(msgData);

@@ -19,7 +19,7 @@ const addMessageToDb = (
         data.type,
         data.message,
         data.postid,
-        data.postLink,
+        data.link,
         data.creationTime,
         data.deliveryStatus,
       ]);

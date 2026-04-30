@@ -64,7 +64,7 @@ function setSocketFunctions(socket: any, io: any) {
           type,
           message: data.msg,
           postid: data.postId,
-          postLink: data.link,
+          link: data.link,
           creationTime: timestamp,
           deliveryStatus: 1,
           isDeleted: false
@@ -120,7 +120,7 @@ function setSocketFunctions(socket: any, io: any) {
                 type,
                 message: data.msg,
                 postid: data.postId,
-                postLink: data.link,
+                link: data.link,
                 creationTime: timestamp,
                 deliveryStatus: 1,
                 isDeleted: false
@@ -148,7 +148,7 @@ function setSocketFunctions(socket: any, io: any) {
                 type,
                 message: data.msg,
                 postid: data.postId,
-                postLink: data.link,
+                link: data.link,
                 creationTime: timestamp,
                 deliveryStatus: 1,
                 isDeleted: false
@@ -175,7 +175,7 @@ function setSocketFunctions(socket: any, io: any) {
               type,
               message: data.msg,
               postid: data.postId,
-              postLink: data.link,
+              link: data.link,
               creationTime: timestamp,
               deliveryStatus: 1,
               isDeleted: false

@@ -8,7 +8,7 @@ type message={
   type:messageType,
   message:string,
   postid:number,
-  postLink:string|null,
+  link:string|null,
   creationTime:string,
   deliveryStatus:number,
   isDeleted:boolean
