@@ -69,6 +69,7 @@ export default class UserRepo {
       u.username, 
       u.profilepic, 
       u.isPrivate,
+      u.uuid,
       COUNT(fl.followid) AS isfollowedBy 
     FROM 
       users AS u 
@@ -130,6 +131,7 @@ export default class UserRepo {
       users.profilepic,
       users.bio,
       users.isPrivate,
+      users.uuid,
       COUNT(DISTINCT imgpsts.postid) AS Posts,
       COUNT(DISTINCT following.followid) AS Following,
       COUNT(DISTINCT followersCount.followid) AS Followers,
@@ -182,6 +184,7 @@ return fetchDb(query,[uuid]);
       u.createdAt,
       u.dob,
       u.isPrivate,
+      u.uuid,
       COUNT(DISTINCT imp.postid) AS PostsCount, 
       COUNT(DISTINCT follows.followerid) AS followersCount,
       COUNT(DISTINCT following.followingid) AS followingCount

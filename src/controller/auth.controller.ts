@@ -126,7 +126,7 @@ const Login_email_controller = async (
     const nvp = req.body?.nameValuePairs;
     let email = nvp?.userid;
     let password = nvp?.password;
-    if (!password || !email)
+    if (!password || !isvalidEmail(email))
       return res
         .status(400)
         .json(

@@ -1,3 +1,0 @@
-{register phone
-register email 
-} testing any will validate other
