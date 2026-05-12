@@ -133,6 +133,51 @@ ORDER BY RAND() + (p.postid * 0.0001)
 LIMIT ?
 `;
     return fetchDb(query, [userid, userid, limit]);
+  };//old
+  getVideoFeedV2 = (userid: string, page: number, limit: number, seed: number) => {
+    let query = ` SELECT 
+    p.*,
+    u.username,
+    u.profilepic,
+
+    pl.userid AS likedBy,
+    COUNT(DISTINCT pl.userid) AS likeCount,
+    COUNT(DISTINCT post_comments.commentid) AS commentCount,
+    COUNT(DISTINCT ps.shareid) AS shareCount,
+    COUNT(DISTINCT plp.likeid) AS isLiked,
+    COUNT(DISTINCT flw.followid) AS isFollowed,
+    COUNT(DISTINCT pv.viewId) as viewCount
+
+FROM imagepost AS p
+JOIN users AS u ON p.userid = u.userid
+
+LEFT JOIN post_likes AS pl ON p.postid = pl.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid
+LEFT JOIN post_shares AS ps ON p.postid = ps.postid
+
+LEFT JOIN post_likes AS plp 
+        ON p.postid = plp.postid AND plp.userid = ?
+
+LEFT JOIN followers AS flw 
+        ON p.userid = flw.followingid AND flw.followerid = ?
+LEFT JOIN postview as pv on p.postid=pv.postid
+
+
+WHERE 
+    p.type = "video"
+    AND (u.isPrivate = 0 OR( flw.followid IS NOT NULL and flw.isApproved=true))
+
+GROUP BY p.postid
+
+ORDER BY
+    CASE 
+      WHEN p.created_at >= NOW() - INTERVAL 7 DAY THEN 1
+      ELSE 2
+    END,
+    RAND(?+p.postid) 
+LIMIT ? OFFSET ?
+`;
+    return fetchDb(query, [userid, userid,seed,limit,page*limit]);
   };
 
   getUserPosts = (reqMakerUserId: string, userid: string, limit: number, offset: number) => {

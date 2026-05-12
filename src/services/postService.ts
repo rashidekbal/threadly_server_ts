@@ -43,7 +43,10 @@ export default class PostService {
 
   getVideoFeed = (userid: string, limit: number = 15) => {
     return this.postRepo.getVideoFeed(userid, limit);
-  };
+  };//old
+  getVideoFeedV2=(userid:string,page:number,limit:number=15,seed:number)=>{
+    return this.postRepo.getVideoFeedV2(userid,page,limit,seed);
+  }
 
   getUserPosts = (reqMakerUserId: string, userid: string, limit: number, offset: number) => {
     return this.postRepo.getUserPosts(reqMakerUserId, userid, limit, offset);
