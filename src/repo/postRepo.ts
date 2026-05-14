@@ -171,10 +171,10 @@ GROUP BY p.postid
 
 ORDER BY
     CASE 
-      WHEN p.created_at >= NOW() - INTERVAL 7 DAY THEN 1
+      WHEN p.created_at >= NOW() - INTERVAL 28 DAY THEN 1
       ELSE 2
     END,
-    RAND(?+p.postid) 
+    RAND(? + p.postid) 
 LIMIT ? OFFSET ?
 `;
     return fetchDb(query, [userid, userid,seed,limit,page*limit]);
