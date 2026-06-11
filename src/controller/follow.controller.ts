@@ -83,7 +83,7 @@ let followControllerV2 = async (
     logger.error(formErrorBody(error as string, 500, req));
     res
       .status(500)
-      .json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+      .json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(error)));
   }
 };
 
