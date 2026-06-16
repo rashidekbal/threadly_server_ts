@@ -40,6 +40,9 @@ export default class PostService {
   getImageFeed = (userid: string) => {
     return this.postRepo.getImageFeed(userid);
   };
+    getImageFeedV2 = (userid: string, page: number, limit: number, seed: number) => {
+    return this.postRepo.getImageFeedV2(userid, page, limit, seed);
+  };
 
   getVideoFeed = (userid: string, limit: number = 15) => {
     return this.postRepo.getVideoFeed(userid, limit);

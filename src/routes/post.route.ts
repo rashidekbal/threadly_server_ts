@@ -6,6 +6,7 @@ import {
   addImagePost,
   addVideoPost,
   getImageFeed,
+  getImageFeedV2,
   getPostinfo,
   getUserPostsController,
   getVideoFeed,
@@ -45,7 +46,9 @@ if (ProductionMode) {
   );
 }
 Router.route("/removePost/:postid").delete(verifyToken, removePost);
-Router.route("/getImagePostsFeed").get(verifyToken, getImageFeed);
+Router.route("/getImagePostsFeed").get(verifyToken, getImageFeed);//old
+Router.route("/getImagePostsFeedv2").post(verifyToken, getImageFeedV2);
+
 Router.route("/getVideoPostsFeed").get(verifyToken, getVideoFeed);//old
 Router.route("/getVideoPostsFeedV2").post(verifyToken, getVideoFeedV2);
 Router.get("/getUserPosts/:userid", verifyToken,accessCheckLayer ,getUserPostsController);

@@ -88,6 +88,20 @@ async function getImageFeed(req: express.Request, res: express.Response) {
     res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
   }
 }
+async function getImageFeedV2(req: express.Request, res: express.Response) {
+  let userid = req.auth?.userid;
+  let page=req.query.page ? Number(req.query.page)>0? Number(req.query.page)-1: 0 : 0;
+  let seed=req.body?.nameValuePairs.seed?Number(req.body.nameValuePairs.seed):Date.now();
+  if (!userid)
+    return res.status(403).json(new ApiError(403, apiErrorType.AUTH_ERROR, new ErrorDetails("please provide a valid jwt token")));
+  try {
+    let response = await postService.getImageFeedV2(userid ,page,15, seed);
+    res.json(new Response(200, response));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+}
 
 async function getVideoFeed(req: express.Request, res: express.Response) {
   let userid = req.auth?.userid;
@@ -151,5 +165,5 @@ const postViewRecordController = async (req: express.Request, res: express.Respo
 export {
   addImagePost, addVideoPost, removePost,
   getImageFeed, getVideoFeed, getUserPostsController,
-  getPostinfo, postViewRecordController,getVideoFeedV2
+  getPostinfo, postViewRecordController,getVideoFeedV2,getImageFeedV2
 };

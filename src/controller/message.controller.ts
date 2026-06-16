@@ -38,6 +38,7 @@ const getpendingMessagesController = async (req: express.Request, res: express.R
 
 const sendMessageController = async (req: express.Request, res: express.Response) => {
   const data = req.body.nameValuePairs;
+  
   if (data == null || data == undefined) {
     return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("please provide a valid request body")));
   }
