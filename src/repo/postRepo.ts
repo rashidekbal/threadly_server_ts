@@ -137,7 +137,7 @@ ORDER BY
     RAND(? + p.postid) 
 LIMIT ? OFFSET ?
 `;
-    return fetchDb(query, [userid, userid]);
+    return fetchDb(query, [userid, userid,seed,limit,page*limit]);
   };
 
   getVideoFeed = (userid: string, limit: number) => {
