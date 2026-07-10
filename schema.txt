@@ -12,6 +12,7 @@ CREATE TABLE users (
   fcmToken text null,
   isPrivate boolean default false,
   blocked boolean default false,
+  isDeleted BOOLEAN DEFAULT FALSE,
   banDuration enum('24hr','permanent','none') deafult 'none',
   banReason text null,
   profileVersion int not null deafult =1,
@@ -30,6 +31,7 @@ CREATE TABLE imagepost (
   caption varchar(255),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   type TEXT NOT NULL,
+  isDeleted BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -40,9 +42,11 @@ CREATE TABLE post_comments (
   comment_text TEXT NOT NULL,
   replyToCommentId int null,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  isDeleted BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (postid) REFERENCES imagepost(postid) ON DELETE CASCADE ON UPDATE CASCADE
-  foreign key (replyToCommentId) references post_comments(commentid) on delte cascade on update cascade
+  FOREIGN KEY (postid) REFERENCES imagepost(postid) ON DELETE CASCADE ON UPDATE CASCADE,
+  foreign key (replyToCommentId) references post_comments(commentid) on delete cascade on update cascade
 );
 
 CREATE TABLE post_likes (
@@ -185,3 +189,12 @@ create table system_anomalies (
   status enum('unresolved', 'resolved') default 'unresolved',
   createdAt datetime default current_timestamp
 );
+
+
+-- ==========================================
+-- MIGRATION: ADD isDeleted FOR SOFT DELETE 
+-- ==========================================
+-- Run these commands on your global/production DB
+-- ALTER TABLE users ADD COLUMN isDeleted BOOLEAN DEFAULT FALSE;
+-- ALTER TABLE imagepost ADD COLUMN isDeleted BOOLEAN DEFAULT FALSE;
+-- ALTER TABLE post_comments ADD COLUMN isDeleted BOOLEAN DEFAULT FALSE;

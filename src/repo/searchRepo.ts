@@ -13,7 +13,7 @@ export default class SearchRepo {
         ELSE 4
         END
         as priority
-    FROM users WHERE LOWER(userid) LIKE LOWER(CONCAT('%',?,'%')) 
+    FROM users WHERE isDeleted=false AND LOWER(userid) LIKE LOWER(CONCAT('%',?,'%')) 
     order by priority asc, userid asc limit 30
     `;
     return fetchDb(query, [target, target, target, target]);
@@ -44,7 +44,7 @@ FROM imagepost AS p
 JOIN users AS u ON p.userid = u.userid
 
 LEFT JOIN post_likes AS pl ON p.postid = pl.postid
-LEFT JOIN post_comments ON p.postid = post_comments.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
 LEFT JOIN post_shares AS ps ON p.postid = ps.postid
 
 LEFT JOIN post_likes AS plp 

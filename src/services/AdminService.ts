@@ -203,15 +203,16 @@ getPostsTrend = async (): Promise<any[] | null> => {
   }
 };
 
-getTopUsers = async (): Promise<any[] | null> => {
+getTopUsers = async (page: number = 1): Promise<any[] | null> => {
   try {
+    const offset = (page - 1) * 10;
     const result = await fetchDb(
       `select usr.userid, usr.username, usr.profilepic as profile,
        count(distinct fl.followid) as followers
        from users as usr
        left join followers as fl on usr.userid = fl.followingid and fl.isApproved = 1
-       group by usr.userid order by followers desc limit 10`,
-      null
+       group by usr.userid order by followers desc limit 10 offset ?`,
+      [offset]
     );
     if (!(result instanceof Array)) return null;
     return result;
@@ -221,8 +222,9 @@ getTopUsers = async (): Promise<any[] | null> => {
   }
 };
 
-getTopPosts = async (): Promise<any[] | null> => {
+getTopPosts = async (page: number = 1): Promise<any[] | null> => {
   try {
+    const offset = (page - 1) * 10;
     const result = await fetchDb(
       `select imgpst.postid, imgpst.imageurl, imgpst.caption,
        imgpst.type, usr.username, usr.userid, usr.profilepic as profile,
@@ -230,8 +232,8 @@ getTopPosts = async (): Promise<any[] | null> => {
        from imagepost as imgpst
        left join post_likes as pl on imgpst.postid = pl.postid
        left join users as usr on imgpst.userid = usr.userid
-       group by imgpst.postid order by likes desc limit 10`,
-      null
+       group by imgpst.postid order by likes desc limit 10 offset ?`,
+      [offset]
     );
     if (!(result instanceof Array)) return null;
     return result;

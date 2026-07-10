@@ -14,15 +14,23 @@ import {
   restrictUser,
   unRestrictUser,
   userinfoEdit,
+  softDeleteUser,
+  unDeleteUser,
 } from "../../repo/adminRepo.js";
 import RedisHelper from "../../redis/operation.js";
+import { v4 as UUIDv4 } from "uuid";
+import bcryptUtil from "../../utils/bcryptUtil.js";
+import fetchDb from "../../utils/dbQueryHelper.js";
 
 const getUsersController = async (
   req: express.Request,
   res: express.Response,
 ) => {
   try {
-    const result = await getUsers(1);
+    const page = parseInt(req.query.page as string) || 1;
+    const search = req.query.search as string || "";
+    const sort = req.query.sort as string || "";
+    const result = await getUsers(page, false, search, sort);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));
@@ -37,6 +45,72 @@ const getUsersController = async (
       );
   }
 };
+
+const getDeletedUsersController = async (req: express.Request, res: express.Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const search = req.query.search as string || "";
+    const sort = req.query.sort as string || "";
+    const result = await getUsers(page, true, search, sort);
+    return res.json(new Response(200, result));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+
+const createUserController = async (req: express.Request|any, res: express.Response) => {
+  try {
+    let { userid, username, email, phone, pass, bio, dob, isPrivate } = req.body;
+    let filePath = req.file?.path;
+    
+    if (!userid || !username || !pass || !dob) {
+      return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("Missing required fields")));
+    }
+
+    const hashedPassword = await bcryptUtil.hashPassword(pass);
+    const uuid = UUIDv4();
+    const sessionId = UUIDv4();
+    let profilepic = null;
+
+    if (filePath) {
+      profilepic = await uploadOnColudinaryviaLocalPath(filePath);
+    }
+    
+    const privateInt = (isPrivate === 'true' || isPrivate === true) ? 1 : 0;
+
+    const query = `INSERT INTO users (userid, username, email, phone, pass, bio, dob, uuid, sessionId, isPrivate, profilepic) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const params = [
+      userid, username, email || null, phone || null, hashedPassword, bio, dob, uuid, sessionId, privateInt, profilepic
+    ];
+    
+    await fetchDb(query, params);
+    
+    return res.status(201).json(new Response(201, { message: "User created successfully" }));
+  } catch (error: any) {
+    logger.error(formErrorBody(error as string, 500, req));
+    if (error?.code === 'ER_DUP_ENTRY') {
+      return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("User ID, email, or phone already exists")));
+    }
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails("Failed to create user")));
+  }
+};
+
+const deleteUserController = async (req: express.Request, res: express.Response) => {
+  try {
+    const userid = req.params.userid;
+    if (!userid) {
+      return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("Please provide a valid userid")));
+    }
+    
+    await softDeleteUser(userid);
+    return res.json(new Response(200, { message: "User deleted successfully" }));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails("Failed to delete user")));
+  }
+};
+
 const getUserInfoController = async (
   req: express.Request,
   res: express.Response,
@@ -149,6 +223,26 @@ const deleteUserProfilePicController = async (req:express.Request, res:express.R
     return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
   }
 };
+const unDeleteUserController = async (req: express.Request, res: express.Response) => {
+  const userid = req.params.userid;
+  if (!userid)
+    return res
+      .status(400)
+      .json(
+        new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("missing field")),
+      );
+
+  try {
+    await unDeleteUser(userid);
+    return res.status(200).json(new Response(200, { message: "success" }));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res
+      .status(500)
+      .json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+
 const restrictUserController = async (req:express.Request, res:express.Response) => {
 
   try {
@@ -201,4 +295,8 @@ export {
   deleteUserProfilePicController,
   restrictUserController,
   unRestrictUserController,
+  createUserController,
+  deleteUserController,
+  getDeletedUsersController,
+  unDeleteUserController
 };

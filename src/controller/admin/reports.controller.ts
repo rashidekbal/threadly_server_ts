@@ -9,7 +9,8 @@ import { getReports, updateReportStatus } from "../../repo/adminRepo.js";
 const getReportsController = async (req: express.Request, res: express.Response) => {
   try {
     const status = (req.query.status as string) || "pending";
-    const result = await getReports(status);
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const result = await getReports(status, page);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));

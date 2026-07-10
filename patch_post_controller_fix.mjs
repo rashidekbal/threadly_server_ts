@@ -1,4 +1,9 @@
-import Response from "../../constants/Response.js";
+import fs from 'fs';
+
+const filePath = 'd:/projects/threadly/Server_typescript_migration/server/src/controller/admin/post.controller.ts';
+let content = fs.readFileSync(filePath, 'utf8');
+
+const correctContent = `import Response from "../../constants/Response.js";
 import ApiError from "../../constants/apiError.js";
 import apiErrorType from "../../constants/apiErrorTypesEnum.js";
 import logger, { formErrorBody } from "../../utils/pino.js";
@@ -22,8 +27,7 @@ const getUserPostsController = async (req:express.Request, res:express.Response)
 const getAllPostsController = async (req: express.Request, res: express.Response) => {
   try {
     const sort = req.query.sort as string || "";
-    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
-    const result = await getAllPosts(sort, page);
+    const result = await getAllPosts(sort);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));
@@ -58,3 +62,7 @@ const getSinglePostController = async (req: express.Request, res: express.Respon
 };
 
 export { getUserPostsController, getAllPostsController, deletePostController, getSinglePostController };
+`;
+
+fs.writeFileSync(filePath, correctContent, 'utf8');
+console.log("Successfully fixed post.controller.ts");

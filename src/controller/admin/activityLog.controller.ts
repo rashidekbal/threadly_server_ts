@@ -9,9 +9,10 @@ import { getUserActivityLog, getPlatformActivity } from "../../repo/adminRepo.js
 const getUserActivityLogController = async (req: express.Request, res: express.Response) => {
   try {
     const userid = req.params.userid;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     if (!userid)
       return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("please provide a valid userid")));
-    const result = await getUserActivityLog(userid);
+    const result = await getUserActivityLog(userid, page);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));
@@ -21,7 +22,8 @@ const getUserActivityLogController = async (req: express.Request, res: express.R
 
 const getPlatformActivityController = async (req: express.Request, res: express.Response) => {
   try {
-    const result = await getPlatformActivity();
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const result = await getPlatformActivity(page);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));

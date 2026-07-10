@@ -18,11 +18,14 @@ import express from "express"
 
 const getAnalyticsController = async (req: express.Request, res: express.Response) => {
   try {
+    const usersPage = parseInt(req.query.usersPage as string) || 1;
+    const postsPage = parseInt(req.query.postsPage as string) || 1;
+
     const [signups, posts, topUsers, topPosts] = await Promise.all([
       adminService.getSignupsTrend(),
       adminService.getPostsTrend(),
-      adminService.getTopUsers(),
-      adminService.getTopPosts(),
+      adminService.getTopUsers(usersPage),
+      adminService.getTopPosts(postsPage),
     ]);
     return res.json(new Response(200, { signups, posts, topUsers, topPosts }));
   } catch (error) {

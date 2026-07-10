@@ -12,6 +12,7 @@ const getUserStoriesController = async (
 ) => {
   try {
     const userid = req.params.userid;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     if (!userid)
       return res
         .status(404)
@@ -22,7 +23,7 @@ const getUserStoriesController = async (
             new ErrorDetails("please provide a valid userid"),
           ),
         );
-    let result = await getUserStory(userid);
+    let result = await getUserStory(userid, page);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));

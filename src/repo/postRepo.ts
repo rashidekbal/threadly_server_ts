@@ -7,7 +7,7 @@ export default class PostRepo {
   };
 
   removePost = (userid: string, postid: number) => {
-    let query = `delete from imagepost where userid=? and postid=?`;
+    let query = `delete from imagepost where isDeleted=false and userid=? and postid=?`;
     return fetchDb(query, [userid, postid]);
   };
 
@@ -28,8 +28,7 @@ JOIN users AS u
       ON p.userid = u.userid
 LEFT JOIN post_likes AS pl 
       ON p.postid = pl.postid
-LEFT JOIN post_comments 
-      ON p.postid = post_comments.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
 LEFT JOIN post_shares AS ps 
       ON p.postid = ps.postid
 LEFT JOIN post_likes AS plp 
@@ -38,8 +37,7 @@ LEFT JOIN followers AS flw
       ON p.userid = flw.followingid AND flw.followerid = ?
 LEFT JOIN postview as pv on p.postid=pv.postid
 
-WHERE 
-    p.postid = ?
+WHERE p.isDeleted=false AND u.isDeleted=false AND p.postid = ?
     AND ((u.isPrivate = 0 OR (flw.followid IS NOT NULL and flw.isApproved=true)) or u.userid=?)
 GROUP BY p.postid;
 `;
@@ -73,7 +71,7 @@ GROUP BY p.postid;
            JOIN users AS u ON p.userid = u.userid
 
            LEFT JOIN post_likes AS pl ON p.postid = pl.postid
-           LEFT JOIN post_comments ON p.postid = post_comments.postid
+           LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
            LEFT JOIN post_shares AS ps ON p.postid = ps.postid
 
            LEFT JOIN post_likes AS plp
@@ -84,8 +82,7 @@ GROUP BY p.postid;
           LEFT JOIN postview as pv on p.postid=pv.postid
           
 
-    WHERE
-      p.type = "image"
+    WHERE p.isDeleted=false AND u.isDeleted=false AND p.type = "image"
       AND (u.isPrivate = 0 OR (flw.followid IS NOT NULL and flw.isApproved=true))
 
     GROUP BY p.postid
@@ -112,7 +109,7 @@ FROM imagepost AS p
 JOIN users AS u ON p.userid = u.userid
 
 LEFT JOIN post_likes AS pl ON p.postid = pl.postid
-LEFT JOIN post_comments ON p.postid = post_comments.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
 LEFT JOIN post_shares AS ps ON p.postid = ps.postid
 
 LEFT JOIN post_likes AS plp 
@@ -123,8 +120,7 @@ LEFT JOIN followers AS flw
 LEFT JOIN postview as pv on p.postid=pv.postid
 
 
-WHERE 
-    p.type = "image"
+WHERE p.isDeleted=false AND u.isDeleted=false AND p.type = "image"
     AND (u.isPrivate = 0 OR( flw.followid IS NOT NULL and flw.isApproved=true))
 
 GROUP BY p.postid
@@ -158,7 +154,7 @@ FROM imagepost AS p
 JOIN users AS u ON p.userid = u.userid
 
 LEFT JOIN post_likes AS pl ON p.postid = pl.postid
-LEFT JOIN post_comments ON p.postid = post_comments.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
 LEFT JOIN post_shares AS ps ON p.postid = ps.postid
 
 LEFT JOIN post_likes AS plp 
@@ -169,8 +165,7 @@ LEFT JOIN followers AS flw
 LEFT JOIN postview as pv on p.postid=pv.postid
 
 
-WHERE 
-    p.type = "video"
+WHERE p.isDeleted=false AND u.isDeleted=false AND p.type = "video"
     AND (u.isPrivate = 0 OR( flw.followid IS NOT NULL and flw.isApproved=true))
 
 GROUP BY p.postid
@@ -197,7 +192,7 @@ FROM imagepost AS p
 JOIN users AS u ON p.userid = u.userid
 
 LEFT JOIN post_likes AS pl ON p.postid = pl.postid
-LEFT JOIN post_comments ON p.postid = post_comments.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
 LEFT JOIN post_shares AS ps ON p.postid = ps.postid
 
 LEFT JOIN post_likes AS plp 
@@ -208,8 +203,7 @@ LEFT JOIN followers AS flw
 LEFT JOIN postview as pv on p.postid=pv.postid
 
 
-WHERE 
-    p.type = "video"
+WHERE p.isDeleted=false AND u.isDeleted=false AND p.type = "video"
     AND (u.isPrivate = 0 OR( flw.followid IS NOT NULL and flw.isApproved=true))
 
 GROUP BY p.postid
@@ -241,12 +235,12 @@ SELECT
 FROM imagepost AS p
 JOIN users AS u ON p.userid = u.userid
 LEFT JOIN post_likes AS pl ON p.postid = pl.postid
-LEFT JOIN post_comments ON p.postid = post_comments.postid
+LEFT JOIN post_comments ON p.postid = post_comments.postid AND post_comments.isDeleted = false
 LEFT JOIN post_shares AS ps ON p.postid = ps.postid
 LEFT JOIN post_likes AS plp ON p.postid = plp.postid AND plp.userid = ?
 LEFT JOIN followers AS flw ON p.userid = flw.followingid AND flw.followerid = ?
 LEFT JOIN postview as pv on p.postid=pv.postid
-WHERE p.userid = ?
+WHERE p.isDeleted=false AND u.isDeleted=false AND p.userid = ?
 GROUP BY p.postid
 ORDER BY p.created_at DESC
 limit ?

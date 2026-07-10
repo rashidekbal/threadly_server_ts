@@ -6,7 +6,7 @@ export default class UserRepo {
   getUUidFromUserId = (userid: string) => {
     return new Promise(async (resolve, reject) => {
       try {
-        let response = await fetchDb(`select uuid from users where userid =?`, [
+        let response = await fetchDb(`select uuid from users where isDeleted=false and userid=?`, [
           userid,
         ]);
         if (!(response instanceof Array)) return reject(null);
@@ -47,7 +47,7 @@ export default class UserRepo {
   };
   getBasicUserDetailsFromUUid = (uuid: string) => {
     return new Promise(async (resolve, reject) => {
-      const query = `select userid,username,profilepic,fcmToken from users where uuid=?`;
+      const query = `select userid,username,profilepic,fcmToken from users where isDeleted=false and uuid=?`;
       try {
         let response = await fetchDb(query, [uuid]);
         if (!(response instanceof Array)) return reject(null);
@@ -90,19 +90,19 @@ export default class UserRepo {
   };
 
   fetchUserforAuth(column: string, value: string) {
-    let query = `select * from users where ${column} = ?`;
+    let query = `select * from users where isDeleted=false and ${column} = ?`;
     return fetchDb(query, [value]);
   }
 
 
   createSession=(sessionId:string,userid:string)=>{
     return  fetchDb(
-          `update users set sessionId=? , fcmToken=null where userid=?`,
+          `update users set sessionId=? , fcmToken=null where isDeleted=false and userid=?`,
           [sessionId,userid],
         );
   }
   logoutUser=(userid:string)=>{
-    const query = `update users set fcmToken=null , sessionId=null where userid=?`;
+    const query = `update users set fcmToken=null , sessionId=null where isDeleted=false and userid=?`;
     return fetchDb(query,[userid])
   }
 
@@ -166,8 +166,7 @@ export default class UserRepo {
     SELECT 
       userid,
       username,
-      profilepic from users  where 
-      uuid=?
+      profilepic from users  where isDeleted=false and uuid=?
 
   `;
 return fetchDb(query,[uuid]);
@@ -204,32 +203,32 @@ return fetchDb(query,[uuid]);
   return fetchDb(query,[userid])
   }
   getUserPrivacyInfo=(userid:string)=>{
-    const query = `select isPrivate from users where userid=? limit 1`;
+    const query = `select isPrivate from users where isDeleted=false and userid=? limit 1`;
     return fetchDb(query,[userid]);
   }
   setUserAccountPrivacyStatus=(userid:string,status:boolean)=>{
-      const query=`update users set isPrivate=? where userid=?`
+      const query=`update users set isPrivate=? where isDeleted=false and userid=?`
       return fetchDb(query,[userid,status])
   }
   // Profile edit methods
   updateUsername=(userid:string,name:string)=>{
-    const query = `update users set username=? where userid=?`;
+    const query = `update users set username=? where isDeleted=false and userid=?`;
     return fetchDb(query,[name,userid]);
   }
   checkUserIdExists=(userid:string)=>{
-    const query = `select userid from users where userid=?`;
+    const query = `select userid from users where isDeleted=false and userid=?`;
     return fetchDb(query,[userid]);
   }
   updateUserId=(userid:string,newUserid:string,sessionId:string)=>{
-    const query = `update users set userid=? , sessionId=? where userid=?`;
+    const query = `update users set userid=? , sessionId=? where isDeleted=false and userid=?`;
     return fetchDb(query,[newUserid,sessionId,userid]);
   }
   updateBio=(userid:string,bio:string)=>{
-    const query = `update users set bio=? where userid=?`;
+    const query = `update users set bio=? where isDeleted=false and userid=?`;
     return fetchDb(query,[bio,userid]);
   }
   updateProfilePic=(userid:string,url:any)=>{
-    const query = `update users set profilepic=? where userid=?`;
+    const query = `update users set profilepic=? where isDeleted=false and userid=?`;
     return fetchDb(query,[url,userid]);
   }
   // Password reset methods
@@ -243,12 +242,12 @@ return fetchDb(query,[uuid]);
   }
   // FCM token update
   updateFcmToken=(userid:string,token:string)=>{
-    const query = `update users set fcmToken=? where userid=?`;
+    const query = `update users set fcmToken=? where isDeleted=false and userid=?`;
     return fetchDb(query,[token,userid]);
   }
 
    updateUserPassword=async(userid:string,hashedPassword:string)=>{
-    const query=`update users set pass=? where userid=?`;
+    const query=`update users set pass=? where isDeleted=false and userid=?`;
     return fetchDb(query,[hashedPassword,userid])
 }
   
