@@ -165,3 +165,23 @@ create table postview (
 create  index idx_captions_userid on imagepost(caption);
 create unique index idx_users_userid on users(userid);
 
+create table post_reports (
+  reportid int not null primary key auto_increment,
+  reporterUserid varchar(250) not null,
+  postid int not null,
+  reason varchar(255) not null,
+  status enum('pending','reviewed','dismissed') default 'pending',
+  createdAt datetime default current_timestamp,
+  foreign key (reporterUserid) references users(userid) on delete cascade on update cascade,
+  foreign key (postid) references imagepost(postid) on delete cascade on update cascade
+);
+
+create table system_anomalies (
+  anomaly_id int not null primary key auto_increment,
+  error_message text not null,
+  error_code varchar(50) null,
+  api_path varchar(255) null,
+  severity enum('low', 'medium', 'high', 'critical') default 'medium',
+  status enum('unresolved', 'resolved') default 'unresolved',
+  createdAt datetime default current_timestamp
+);

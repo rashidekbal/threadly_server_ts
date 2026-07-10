@@ -3,7 +3,7 @@ import ApiError from "../../constants/apiError.js";
 import apiErrorType from "../../constants/apiErrorTypesEnum.js";
 import logger, { formErrorBody } from "../../utils/pino.js";
 import express from "express";
-import { getUserPost } from "../../repo/adminRepo.js";
+import { getUserPost, getAllPosts, deletePost } from "../../repo/adminRepo.js";
 import ErrorDetails from "../../constants/errorDetails.js";
 
 const getUserPostsController = async (req:express.Request, res:express.Response) => {
@@ -17,5 +17,26 @@ const getUserPostsController = async (req:express.Request, res:express.Response)
     return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR,{}));
   }
 };
-export { getUserPostsController };
+const getAllPostsController = async (req: express.Request, res: express.Response) => {
+  try {
+    const result = await getAllPosts();
+    return res.json(new Response(200, result));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+const deletePostController = async (req: express.Request, res: express.Response) => {
+  try {
+    const postid = req.params.postid;
+    if (!postid)
+      return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("please provide a valid postid")));
+    await deletePost(Number(postid));
+    return res.status(200).json(new Response(200, { message: "success" }));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+export { getUserPostsController, getAllPostsController, deletePostController };
 

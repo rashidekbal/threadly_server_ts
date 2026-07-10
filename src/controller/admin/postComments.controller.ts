@@ -4,7 +4,7 @@ import ApiError from "../../constants/apiError.js";
 import apiErrorType from "../../constants/apiErrorTypesEnum.js";
 import express from "express"
 import ErrorDetails from "../../constants/errorDetails.js";
-import { getCommentsOfPost } from "../../repo/adminRepo.js";
+import { getCommentsOfPost, deleteComment } from "../../repo/adminRepo.js";
 
 const getCommentsController = async (req:express.Request, res:express.Response) => {
   const postid = req.params.postid;
@@ -18,5 +18,17 @@ try {
     return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR,new ErrorDetails("something went wrong..")));
   }
 };
-export {getCommentsController}
+const deleteCommentController = async (req: express.Request, res: express.Response) => {
+  try {
+    const commentid = req.params.commentid;
+    if (!commentid)
+      return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("please provide a valid commentid")));
+    await deleteComment(Number(commentid));
+    return res.status(200).json(new Response(200, { message: "success" }));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+export { getCommentsController, deleteCommentController }
 

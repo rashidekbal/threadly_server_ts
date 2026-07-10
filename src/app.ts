@@ -24,6 +24,8 @@ import AdminStoryRoute from "./routes/admin/story.route.js"
 import AdminCommentRoute from "./routes/admin/adminCommentsRoute.js"
 import AdminUsersRouter from "./routes/admin/user.route.js";
 import statsRoute from "./routes/admin/stats.route.js"
+import AdminReportsRoute from "./routes/admin/reports.route.js"
+import AdminAnomalyRoute from "./routes/admin/anomaly.route.js"
 let app = express();
 
 let server = http.createServer(app);
@@ -66,4 +68,6 @@ app.use("/api/admin/v1/posts",AdminPostsRoute);
 app.use("/api/admin/v1/story",AdminStoryRoute);
 app.use("/api/admin/v1/comments",AdminCommentRoute);
 app.use("/api/admin/v1/stats",statsRoute);
+app.use("/api/admin/v1/reports",AdminReportsRoute);
+app.use("/api/admin/v1/anomalies",AdminAnomalyRoute);
 export default server

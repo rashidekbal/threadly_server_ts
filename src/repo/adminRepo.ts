@@ -116,6 +116,83 @@ select st.*,
 `;
 return fetchDb(db_query,[userid]);
 }
+const getAllPosts = () => {
+  const db_query = `
+    select imgpst.postid, imgpst.userid, imgpst.imageurl, imgpst.caption,
+    imgpst.type, imgpst.created_at,
+    usr.username, usr.profilepic as profile,
+    count(distinct pl.userid) as likesCount,
+    count(distinct pc.commentid) as commentsCount,
+    count(distinct pv.viewId) as viewsCount
+    from imagepost as imgpst
+    left join users as usr on imgpst.userid = usr.userid
+    left join post_likes as pl on imgpst.postid = pl.postid
+    left join post_comments as pc on imgpst.postid = pc.postid
+    left join postview as pv on imgpst.postid = pv.postid
+    group by imgpst.postid order by imgpst.postid desc
+  `;
+  return fetchDb(db_query, null);
+};
+const deletePost = (postid: number) => {
+  return fetchDb(`delete from imagepost where postid=?`, [postid]);
+};
+const deleteComment = (commentid: number) => {
+  return fetchDb(`delete from post_comments where commentid=?`, [commentid]);
+};
+const getReports = (status: string) => {
+  const db_query = `
+    select pr.reportid, pr.postid, pr.reason, pr.status, pr.createdAt,
+    imgpst.imageurl, imgpst.caption, imgpst.type,
+    reporter.username as reporterUsername,
+    owner.username as postOwnerUsername, owner.userid as postOwnerUserid, owner.uuid as postOwnerUuid
+    from post_reports as pr
+    left join imagepost as imgpst on pr.postid = imgpst.postid
+    left join users as reporter on pr.reporterUserid = reporter.userid
+    left join users as owner on imgpst.userid = owner.userid
+    where pr.status=? order by pr.createdAt desc
+  `;
+  return fetchDb(db_query, [status]);
+};
+const updateReportStatus = (reportid: number, status: string) => {
+  return fetchDb(`update post_reports set status=? where reportid=?`, [status, reportid]);
+};
+const reportPost = (userid: string, postid: number, reason: string) => {
+  return fetchDb(`insert into post_reports (reporterUserid, postid, reason) values (?,?,?)`, [userid, postid, reason]);
+};
+const getUserActivityLog = (userid: string) => {
+  const db_query = `
+    (select 'post' as type, imgpst.created_at as time, imgpst.caption as detail, imgpst.imageurl as media
+     from imagepost as imgpst where imgpst.userid=? order by imgpst.created_at desc limit 10)
+    union all
+    (select 'comment' as type, pc.createdAt as time, pc.comment_text as detail, null as media
+     from post_comments as pc where pc.userid=? order by pc.createdAt desc limit 10)
+    union all
+    (select 'like' as type, pl.createdAt as time, concat('liked post #', pl.postid) as detail, null as media
+     from post_likes as pl where pl.userid=? order by pl.createdAt desc limit 10)
+    union all
+    (select 'story' as type, st.createdAt as time, null as detail, st.storyUrl as media
+     from story as st where st.userid=? order by st.createdAt desc limit 10)
+    order by time desc limit 30
+  `;
+  return fetchDb(db_query, [userid, userid, userid, userid]);
+};
+const getPlatformActivity = () => {
+  const db_query = `
+    (select 'post' as type, imgpst.created_at as time, imgpst.caption as detail, imgpst.imageurl as media, imgpst.userid
+     from imagepost as imgpst order by imgpst.created_at desc limit 15)
+    union all
+    (select 'comment' as type, pc.createdAt as time, pc.comment_text as detail, null as media, pc.userid
+     from post_comments as pc order by pc.createdAt desc limit 15)
+    union all
+    (select 'like' as type, pl.createdAt as time, concat('liked post #', pl.postid) as detail, null as media, pl.userid
+     from post_likes as pl order by pl.createdAt desc limit 10)
+    union all
+    (select 'story' as type, st.createdAt as time, null as detail, st.storyUrl as media, st.userid
+     from story as st order by st.createdAt desc limit 10)
+    order by time desc limit 50
+  `;
+  return fetchDb(db_query, null);
+};
 export {
   getCommentsOfPost,
   getUserPost,
@@ -126,5 +203,13 @@ export {
   editUserProfile,
   restrictUser,
   unRestrictUser,
-  getUserStory
+  getUserStory,
+  getAllPosts,
+  deletePost,
+  deleteComment,
+  getReports,
+  updateReportStatus,
+  reportPost,
+  getUserActivityLog,
+  getPlatformActivity,
 };

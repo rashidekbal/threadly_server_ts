@@ -14,6 +14,10 @@ function setSocketFunctions(socket: any, io: any) {
     addUser(data, socket.id);
   });
 
+  socket.on("admin_auth", () => {
+    socket.join("admin_room");
+  });
+
   socket.on("CToS", async (data: any) => {
 
     let MsgUid = data.MsgUid;
