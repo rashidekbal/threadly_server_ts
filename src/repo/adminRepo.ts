@@ -103,6 +103,26 @@ const getUserInfo = (userid: string) => {
    left join imagepost as imgpst on usr.userid=imgpst.userid where usr.userid=?`;
   return fetchDb(db_query, [userid]);
 };
+
+const getUserFollowers = async (userid: string, page: number = 1) => {
+  const db_query = `select us.userid, us.username, us.profilepic as profile, fl.createdAt as joinDate
+    from followers as fl
+    inner join users as us on fl.followerid = us.userid
+    where fl.followingid = ?
+    order by fl.createdAt desc limit 20 offset ?`;
+  const offset = (page - 1) * 20;
+  return fetchDb(db_query, [userid, offset]);
+};
+
+const getUserFollowings = async (userid: string, page: number = 1) => {
+  const db_query = `select us.userid, us.username, us.profilepic as profile, fl.createdAt as joinDate
+    from followers as fl
+    inner join users as us on fl.followingid = us.userid
+    where fl.followerid = ?
+    order by fl.createdAt desc limit 20 offset ?`;
+  const offset = (page - 1) * 20;
+  return fetchDb(db_query, [userid, offset]);
+};
 const overridePassword = async (uuid: string, password: string) => {
   const query = `update users set pass=? where uuid=?`;
   let encrypterPassword = await bcryptUtil.hashPassword(password);
@@ -280,6 +300,8 @@ export {
   restrictUser,
   unRestrictUser,
   getUserStory,
+  getUserFollowers,
+  getUserFollowings,
   getAllPosts,
   deletePost,
   deleteComment,

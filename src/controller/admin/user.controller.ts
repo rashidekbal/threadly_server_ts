@@ -16,6 +16,8 @@ import {
   userinfoEdit,
   softDeleteUser,
   unDeleteUser,
+  getUserFollowers,
+  getUserFollowings,
 } from "../../repo/adminRepo.js";
 import RedisHelper from "../../redis/operation.js";
 import { v4 as UUIDv4 } from "uuid";
@@ -52,6 +54,32 @@ const getDeletedUsersController = async (req: express.Request, res: express.Resp
     const search = req.query.search as string || "";
     const sort = req.query.sort as string || "";
     const result = await getUsers(page, true, search, sort);
+    return res.json(new Response(200, result));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+
+const getUserFollowersController = async (req: express.Request, res: express.Response) => {
+  try {
+    const userid = req.params.userid;
+    const page = parseInt(req.query.page as string) || 1;
+    if (!userid) return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("missing userid")));
+    const result = await getUserFollowers(userid, page);
+    return res.json(new Response(200, result));
+  } catch (error) {
+    logger.error(formErrorBody(error as string, 500, req));
+    return res.status(500).json(new ApiError(500, apiErrorType.API_ERROR, new ErrorDetails(null)));
+  }
+};
+
+const getUserFollowingsController = async (req: express.Request, res: express.Response) => {
+  try {
+    const userid = req.params.userid;
+    const page = parseInt(req.query.page as string) || 1;
+    if (!userid) return res.status(400).json(new ApiError(400, apiErrorType.API_ERROR, new ErrorDetails("missing userid")));
+    const result = await getUserFollowings(userid, page);
     return res.json(new Response(200, result));
   } catch (error) {
     logger.error(formErrorBody(error as string, 500, req));
@@ -298,5 +326,7 @@ export {
   createUserController,
   deleteUserController,
   getDeletedUsersController,
-  unDeleteUserController
+  unDeleteUserController,
+  getUserFollowersController,
+  getUserFollowingsController
 };
