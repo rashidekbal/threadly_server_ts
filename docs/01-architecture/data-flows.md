@@ -137,3 +137,148 @@ sequenceDiagram
     AnomalySvc->>SocketGW: io.to("admin_room").emit("system_anomaly", anomalyData)
     SocketGW->>Admin: Real-time Alert on Admin Dashboard
 ```
+
+---
+
+## 6. Comments & Nested Replies Data Flow
+
+This sequence diagrams how the backend handles top-level comments, parent-child thread lookups (`replyToCommentId`), comment likes, and asynchronous push notification dispatch via FCM.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Mobile Client (Alice)
+    participant Route as comment.route.ts
+    participant Ctrl as comment.controller.ts
+    participant Svc as commentService.ts
+    participant Repo as commentRepo.ts
+    participant DB as MySQL (post_comments & comment_likes)
+    participant FCM as fcmService.ts
+    actor Author as Post Author (Bob)
+
+    Client->>Route: POST /api/comment/addComment { postid: 1042, comment: "Awesome capture!" }
+    Route->>Ctrl: addComentController(req, res)
+    Ctrl->>Svc: addComment(userid, postid, comment)
+    Svc->>Repo: insertComment(userid, postid, comment)
+    Repo->>DB: INSERT INTO post_comments (userid, postid, comment_text) VALUES (...)
+    DB-->>Repo: Inserted ID 502
+    Repo-->>Svc: Success commentid = 502
+    
+    par Asynchronous Push Notification
+        Svc->>DB: SELECT userid FROM imagepost WHERE postid = 1042
+        DB-->>Svc: Bob (bob_uuid)
+        Svc->>FCM: notifyPostComment(bob_uuid, "Alice commented on your post", 1042)
+        FCM-->>Author: FCM Data Push Delivered
+    end
+
+    Svc-->>Ctrl: Return comment object
+    Ctrl-->>Client: 201 Created { commentid: 502, ... }
+
+    actor Charlie as Mobile Client (Charlie)
+    Charlie->>Route: POST /api/comment/replyTo/502 { postId: 1042, comment: "I agree with Alice" }
+    Route->>Ctrl: replyToCommentController(req, res)
+    Ctrl->>Svc: replyToComment(userid, commentId: 502, postId: 1042, text)
+    Svc->>Repo: insertReply(userid, postid, text, replyToCommentId: 502)
+    Repo->>DB: INSERT INTO post_comments (userid, postid, comment_text, replyToCommentId) VALUES (..., 502)
+    DB-->>Repo: Inserted Reply ID 503
+    Svc->>FCM: notifyCommentReply(alice_uuid, "Charlie replied to your comment", 502)
+    Ctrl-->>Charlie: 201 Created { commentid: 503, replyToCommentId: 502 }
+
+    Client->>Route: GET /api/comment/getCommentReplies/502
+    Route->>Ctrl: getReplyOfCommentController(req, res)
+    Ctrl->>Svc: getReplies(commentId: 502)
+    Svc->>Repo: queryReplies(502)
+    Repo->>DB: SELECT c.*, u.username, u.profilepic, COUNT(l.comment_like_id) as likes FROM post_comments c JOIN users u ON ... LEFT JOIN comment_likes l ON ... WHERE c.replyToCommentId = 502 GROUP BY c.commentid
+    DB-->>Repo: Reply rows with like counts
+    Repo-->>Ctrl: Array of child comments
+    Ctrl-->>Client: 200 OK [ { commentid: 503, ... } ]
+```
+
+---
+
+## 7. Story Publishing, Expiration & Realtime View Beacon Flow
+
+This sequence diagrams ephemeral 24-hour stories: media upload to Cloudinary, database persistence with auto-expiration TTL, live Socket.IO view receipts, and viewer audits.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Alice as Story Creator
+    participant Route as story.route.ts
+    participant Multer as multer.ts
+    participant Svc as storyService.ts
+    participant Cloud as Cloudinary API
+    participant Repo as storyRepo.ts
+    participant DB as MySQL (story & story_views)
+    actor Bob as Story Viewer
+    participant Socket as SocketMainHandler.ts
+
+    Alice->>Route: POST /api/story/addStory (Multipart Form Data)
+    Route->>Multer: Process media buffer
+    Multer->>Svc: addStory(userid, file, type)
+    Svc->>Cloud: uploadToCloudinary(file.path)
+    Cloud-->>Svc: Secure HTTPS Media URL
+    Svc->>Repo: createStory(userid, mediaUrl, expiresAt: NOW() + 24 HOURS)
+    Repo->>DB: INSERT INTO story (userid, mediaUrl, expiresAt) VALUES (...)
+    DB-->>Repo: storyId: 77
+    Svc-->>Alice: 201 Created { storyId: 77, mediaUrl: "..." }
+
+    Bob->>Socket: emit("StoryViewed", { storyId: 77, viewerUserId: "bob" })
+    Socket->>DB: INSERT IGNORE INTO story_views (storyid, userid, viewedAt) VALUES (77, "bob", NOW())
+    
+    Alice->>Route: GET /api/story/viewers/77
+    Route->>Svc: getStoryViewers(77)
+    Svc->>Repo: queryViewers(77)
+    Repo->>DB: SELECT u.username, u.profilepic, sv.viewedAt FROM story_views sv JOIN users u ON sv.userid = u.userid WHERE sv.storyid = 77
+    DB-->>Repo: Viewer list records
+    Repo-->>Alice: 200 OK [ { username: "bob", profilepic: "..." } ]
+
+    Note over DB: Query filtration: WHERE expiresAt > NOW() hides stories older than 24 hours
+```
+
+---
+
+## 8. Social Graph & Private Profile Approval Pipeline
+
+This sequence diagrams relationship state transitions: following public accounts vs. requesting to follow private accounts, follow request cancellation, approval, rejection, and FCM status notifications.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Alice as Requester (Alice)
+    participant Route as follow.route.ts
+    participant Svc as followService.ts
+    participant Repo as followRepo.ts
+    participant DB as MySQL (followers & users)
+    participant FCM as fcmService.ts
+    actor Bob as Target User (Bob)
+
+    Alice->>Route: POST /api/follow/follow/V2/ { followingid: "bob" }
+    Route->>Svc: followUser(aliceId, bobId)
+    Svc->>Repo: getUserPrivacy("bob")
+    Repo->>DB: SELECT isPrivate FROM users WHERE userid = "bob"
+    
+    alt Bob is a Private Account (isPrivate = 1)
+        DB-->>Svc: isPrivate = true
+        Svc->>Repo: createFollowRequest(aliceId, bobId, status: "pending")
+        Repo->>DB: INSERT INTO followers (follower_userid, following_userid, status) VALUES (alice, bob, 'pending')
+        Svc->>FCM: dispatchNotification(bob_uuid, "newFollowRequest", { follower: aliceId })
+        FCM-->>Bob: FCM Alert: Alice requested to follow you
+        Svc-->>Alice: 200 OK { "response": "PENDING", "status": "success" }
+        
+        Bob->>Route: POST /api/follow/acceptFollowRequest/ { followerId: "alice" }
+        Route->>Svc: acceptFollowRequest(bobId, aliceId)
+        Svc->>Repo: updateFollowStatus(aliceId, bobId, 'accepted')
+        Repo->>DB: UPDATE followers SET status = 'accepted' WHERE follower_userid = alice AND following_userid = bob
+        Svc->>FCM: dispatchNotification(alice_uuid, "followAccepted", { user: bobId })
+        FCM-->>Alice: FCM Alert: Bob accepted your follow request
+    else Bob is a Public Account (isPrivate = 0)
+        DB-->>Svc: isPrivate = false
+        Svc->>Repo: createFollow(aliceId, bobId, status: "accepted")
+        Repo->>DB: INSERT INTO followers (follower_userid, following_userid, status) VALUES (alice, bob, 'accepted')
+        Svc->>FCM: dispatchNotification(bob_uuid, "newFollower", { follower: aliceId })
+        FCM-->>Bob: FCM Alert: Alice started following you
+        Svc-->>Alice: 200 OK { "response": "SUCCESS", "status": "success" }
+    end
+```
+
