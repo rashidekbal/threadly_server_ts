@@ -19,6 +19,34 @@ A fully typed, layered-architecture REST API server for the **Threadly** social 
 | **Pino** | Structured logging |
 | **Multer** | File upload handling |
 
+## 📚 Engineering Documentation
+
+The project includes an end-to-end, industry-grade **Docs-as-Code** documentation suite designed for AI-assisted pair programming and architectural governance:
+
+- **[Documentation Hub (`docs/README.md`)](docs/README.md)** — Architecture index and navigation hub.
+- **[Exhaustive Codebase Inventory (`docs/CODEBASE_INDEX.md`)](docs/CODEBASE_INDEX.md)** — File-by-file catalog of all 119 source modules.
+- **01. System Architecture**:
+  - [System Overview & Tech Stack](docs/01-architecture/overview.md)
+  - [Component Architecture & Layering](docs/01-architecture/component-architecture.md)
+  - [Process Isolation & Security Model](docs/01-architecture/process-isolation.md)
+  - [Server Data Flows & Sequence Diagrams](docs/01-architecture/data-flows.md)
+- **02. Contracts & Protocols**:
+  - [REST & Admin API Contracts](docs/02-contracts-and-apis/api-contracts.md)
+  - [Realtime Socket.IO & Push Protocol](docs/02-contracts-and-apis/realtime-protocol.md)
+  - [Persistence, MySQL Schemas & Storage](docs/02-contracts-and-apis/persistence-and-storage.md)
+- **03. Developer Playbooks**:
+  - [Local Setup & Environment](docs/03-developer-playbook/local-setup.md)
+  - [Debugging, Diagnostics & Testing](docs/03-developer-playbook/debugging-and-inspection.md)
+  - [Build, Packaging & Cloud Deployment](docs/03-developer-playbook/build-and-packaging.md)
+- **04. Change Playbooks**:
+  - [How-To Add a Feature Recipes](docs/04-change-playbooks/how-to-add-a-feature.md)
+  - [Troubleshooting & Common Failure Modes](docs/04-change-playbooks/troubleshooting.md)
+- **05. Architecture Decision Records (ADRs)**:
+  - [ADR-001: Core Realtime Engine & Transport Choice](docs/05-adrs/ADR-001-core-engine-choice.md)
+  - [ADR-002: Layered Service-Repository Pattern vs Heavy ORMs](docs/05-adrs/ADR-002-state-and-framework.md)
+
+---
+
 ## Getting Started
 
 ### Prerequisites
